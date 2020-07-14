@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 
 NAME = "Membrane_detection"
 PACKAGES = find_packages(where="src")
-META_PATH = os.path.join("src", "Membrane_detection", "__init__.py")
+META_PATH = os.path.join("src", "membrane_detection", "__init__.py")
 KEYWORDS = ["class", "attribute", "boilerplate"]
 CLASSIFIERS = [
     "Development Status :: 3 - Alpha",
