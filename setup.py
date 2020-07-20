@@ -33,11 +33,12 @@ INSTALL_REQUIRES = [
     'black',
     'flake8',
     'pylint',
-    'numpy', 
-    'mkdocs', 
-    'pandas', 
+    'numpy',
+    'mkdocs',
+    'pandas',
     'dask',
     'xlrd',
+    'pims',
 ]
 
 ###################################################################
