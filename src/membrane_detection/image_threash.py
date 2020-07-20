@@ -30,19 +30,28 @@ b= create_hotogram(a)
 def image_thresh(img, thresh):
     """ This function when given a picture and a threshold value, returns an image after thresholding"""
     thresh_val = thresh
-    thresh_im = img < thresh_val
+    thresh_im = img > thresh_val
     plt.imshow(thresh_im, cmap='gray')
     plt.show()
     return thresh_im
 
-c= image_thresh(a, 0.0095)
+c= image_thresh(a, 0.1)
 print (c)
 
 def image_measurements(img):
+    results_dict={}
     total_area=img.size
     stained_area=np.count_nonzero(img)
     percent_area=stained_area/total_area
     total_intensity=np.sum(img)
     mean_intensity=np.mean(img)
-    Intigrated_optical_density=total_intensity*stained_area
+    intigrated_optical_density=total_intensity*stained_area
+    results_dict.update({"total area":total_area, "stained area":stained_area, "percent area": percent_area, "total_intensity":total_intensity, "mean_intensity":mean_intensity, "intigrated_optical_density": intigrated_optical_density })
+    df=pd.DataFrame.from_dict(results_dict, orient='index')
+    
+    return df.T
+
+image_measurements(c)
+
+
 
