@@ -4,10 +4,11 @@ from matplotlib import pyplot as plt
 import skimage
 import skimage.io
 from skimage import data, util, measure
-import pandas as pd 
+import pandas as pd
 import imagecodecs
-import tifffile 
+import tifffile
 from skimage.color import rgb2gray
+
 
 def grayschale(img):
     """converts the image into a grayscale"""
@@ -18,6 +19,7 @@ def grayschale(img):
 a=grayschale('e3 hol 1250 1500_z0_ch02.tif')
 print(a)
 
+
 def create_hotogram(img):
     """This function creates a histogram for the image given, image should be inputed in a grayscale"""
     hist, bins = skimage.exposure.histogram(img)
@@ -25,7 +27,8 @@ def create_hotogram(img):
     plt.xlabel('pixel value (a.u.)')
     plt.ylabel('counts')
     plt.show()
-b= create_hotogram(a)
+b=create_hotogram(a)
+
 
 def image_thresh(img, thresh):
     """ This function when given a picture and a threshold value, returns an image after thresholding"""
@@ -37,6 +40,7 @@ def image_thresh(img, thresh):
 
 c= image_thresh(a, 0.1)
 print (c)
+
 
 def image_measurements(img):
     results_dict={}
