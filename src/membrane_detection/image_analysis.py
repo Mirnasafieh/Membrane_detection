@@ -21,7 +21,10 @@ def grayschale(img):
     grayscale = rgb2gray(original)
 
     return grayscale
-a=grayschale ('e3 hol 1250 1500_z0_ch02.tif')
+a= grayschale('image-0.tif')
+plt.imshow(a)
+plt.show()
+
 
 def create_hotogram(img):
     """This function creates a histogram for the image given, image should be inputed in a grayscale"""
@@ -30,7 +33,7 @@ def create_hotogram(img):
     plt.xlabel('pixel value (a.u.)')
     plt.ylabel('counts')
     plt.show()
-b= create_hotogram(a)
+#create_hotogram(a)
 
 def image_thresh(img, thresh):
     """ This function when given a picture and a threshold value, returns an image after thresholding"""
@@ -40,7 +43,7 @@ def image_thresh(img, thresh):
     plt.show()
     return thresh_im
 
-c= image_thresh(a, 0.28)
+#c= image_thresh(a, 0.28)
 
 
 def image_measurements(img):
@@ -56,4 +59,3 @@ def image_measurements(img):
     
     return df.T
 
-print (image_measurements(c))
