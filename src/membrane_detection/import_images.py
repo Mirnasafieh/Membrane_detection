@@ -1,18 +1,18 @@
-from PIL import Image
 import pathlib
-import matplotlib.pyplot as plt 
+
 
 def import_images(foldername):
-  X_data = []
-  pathname = pathlib.Path(foldername)
-  for x in pathname.iterdir():
-    xname = pathlib.Path(x).name
-    if xname.endswith('01.tif'):
-      im = Image.open(x)
-      plt.imshow(im)
-      plt.show()
-      X_data.append(im)
-  print (X_data)
-
-if __name__ == "__main__":
-  import_images('images')
+    images_data = []
+    pathname = pathlib.Path(foldername)
+    for file in pathname.iterdir():
+        filename = pathlib.Path(file).name
+        tup = ()
+        if filename.endswith('01.tif'):
+            temp = filename[:-6]
+            secondfile = temp + "02.tif"
+            for file2 in pathname.iterdir():
+                filename2 = pathlib.Path(file2).name
+                if filename2 == secondfile:
+                    tup = (file, file2)
+                    images_data.append(tup)
+    return images_data
