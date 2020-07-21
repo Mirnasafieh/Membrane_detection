@@ -8,6 +8,12 @@ import pandas as pd
 import imagecodecs
 import tifffile 
 from skimage.color import rgb2gray
+import skimage.segmentation as seg
+from skimage.segmentation import slic
+from skimage.segmentation import mark_boundaries
+from skimage.util import img_as_float
+import argparse
+from skimage import feature
 
 def grayschale(img):
     """converts the image into a grayscale"""
@@ -15,8 +21,7 @@ def grayschale(img):
     grayscale = rgb2gray(original)
 
     return grayscale
-a=grayschale('e3 hol 1250 1500_z0_ch02.tif')
-print(a)
+a=grayschale ('e3 hol 1250 1500_z0_ch02.tif')
 
 def create_hotogram(img):
     """This function creates a histogram for the image given, image should be inputed in a grayscale"""
@@ -35,8 +40,8 @@ def image_thresh(img, thresh):
     plt.show()
     return thresh_im
 
-c= image_thresh(a, 0.1)
-print (c)
+c= image_thresh(a, 0.28)
+
 
 def image_measurements(img):
     results_dict={}
@@ -45,13 +50,10 @@ def image_measurements(img):
     percent_area=stained_area/total_area
     total_intensity=np.sum(img)
     mean_intensity=np.mean(img)
-    intigrated_optical_density=total_intensity*stained_area
+    intigrated_optical_density=mean_intensity*stained_area #check math
     results_dict.update({"total area":total_area, "stained area":stained_area, "percent area": percent_area, "total_intensity":total_intensity, "mean_intensity":mean_intensity, "intigrated_optical_density": intigrated_optical_density })
     df=pd.DataFrame.from_dict(results_dict, orient='index')
     
     return df.T
 
-image_measurements(c)
-
-
-
+print (image_measurements(c))
