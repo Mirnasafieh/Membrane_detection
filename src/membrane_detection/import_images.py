@@ -9,10 +9,11 @@ def import_images(foldername):
         tup = ()
         if filename.endswith('01.tif'):
             temp = filename[:-6]
-            secondfile = temp + "02.tif"
             for file2 in pathname.iterdir():
-                filename2 = pathlib.Path(file2).name
-                if filename2 == secondfile:
+                if pathlib.Path(file2).name == (temp + "02.tif"):
                     tup = (file, file2)
                     images_data.append(tup)
     return images_data
+
+if __name__ == "__main__":
+    import_images('images')
