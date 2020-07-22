@@ -56,13 +56,13 @@ def edge_detec(img,sigma_val):
 
 
 
-im=grayschale('image-1.tif')
+im=grayschale('image-0.tif')
 #im_roi=grayschale('new_image_2.jpg')
 
 im2= sharpen(im)
 #im2_roi= sharpen(im_roi)
 
-im3=edge_detec(im,0.5)
+im3=edge_detec(im2,0.5)
 #im3_roi=edge_detec(im2_roi,0.5)
 
 
@@ -78,31 +78,31 @@ plt.show()
 #image = im
 
 # apply threshold
-thresh = threshold_otsu(image)
-bw = closing(image > thresh, square(3))
+# thresh = threshold_otsu(image)
+# bw = closing(image > thresh, square(3))
 
-# remove artifacts connected to image border
-cleared = clear_border(bw)
+# # remove artifacts connected to image border
+# cleared = clear_border(bw)
 
-# label image regions
-label_image = label(cleared)
-# to make the background transparent, pass the value of `bg_label`,
-# and leave `bg_color` as `None` and `kind` as `overlay`
-image_label_overlay = label2rgb(label_image, image=image, bg_label=0)
+# # label image regions
+# label_image = label(cleared)
+# # to make the background transparent, pass the value of `bg_label`,
+# # and leave `bg_color` as `None` and `kind` as `overlay`
+# image_label_overlay = label2rgb(label_image, image=image, bg_label=0)
 
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.imshow(image_label_overlay)
+# fig, ax = plt.subplots(figsize=(10, 6))
+# ax.imshow(image_label_overlay)
 
-for region in regionprops(label_image):
-    # take regions with large enough areas
-    if region.area >= 100:
-        # draw rectangle around segmented coins
-        minr, minc, maxr, maxc = region.bbox
-        rect = mpatches.Rectangle((minc, minr), maxc - minc, maxr - minr,
-                                  fill=False, edgecolor='red', linewidth=2)
-        ax.add_patch(rect)
+# for region in regionprops(label_image):
+#     # take regions with large enough areas
+#     if region.area >= 100:
+#         # draw rectangle around segmented coins
+#         minr, minc, maxr, maxc = region.bbox
+#         rect = mpatches.Rectangle((minc, minr), maxc - minc, maxr - minr,
+#                                   fill=False, edgecolor='red', linewidth=2)
+#         ax.add_patch(rect)
 
-ax.set_axis_off()
-plt.tight_layout()
-plt.show()
+# ax.set_axis_off()
+# plt.tight_layout()
+# plt.show()
 
