@@ -55,28 +55,28 @@ def edge_detec(img,sigma_val):
 
 
 
+if __name__ == "__main__":
+    im=grayschale('image-0.tif')
+    im_roi=grayschale('new_image_2.jpg')
 
-im=grayschale('new_image.tif')
-im_roi=grayschale('new_image_2.jpg')
+    im2= sharpen(im)
+    im2_roi= sharpen(im_roi)
 
-im2= sharpen(im)
-im2_roi= sharpen(im_roi)
-
-im3=edge_detec(im2,0.5)
-im3_roi=edge_detec(im2_roi,0.5)
-
-
-plot_comparison(im2, im3, "edge detect segma 0.5 no roi")
-
-plot_comparison(im2_roi, im3_roi, "edge detect segma 0.5 roi")
-plt.show()
+    im3=edge_detec(im2,0.5)
+    im3_roi=edge_detec(im2_roi,0.5)
 
 
-kernel = np.ones((5,5),np.uint8)
-erosion = cv2.erode(im3,kernel,iterations = 1)
-gradient = cv2.morphologyEx(im3, cv2.MORPH_GRADIENT, kernel)
-plot_comparison(im3,gradient , "gradient")
-plt.show()
+    plot_comparison(im2, im3, "edge detect segma 0.5 no roi")
+
+    plot_comparison(im2_roi, im3_roi, "edge detect segma 0.5 roi")
+    plt.show()
+
+
+    # kernel = np.ones((5,5),np.uint8)
+    # erosion = cv2.erode(im3,kernel,iterations = 1)
+    # gradient = cv2.morphologyEx(im3, cv2.MORPH_GRADIENT, kernel)
+    # plot_comparison(im3,gradient , "gradient")
+    # plt.show()
 
 """ the following code recognized subpopulations in the picture, maybe we could use it to eliminate them and clean the picture"""
 # image = im3
