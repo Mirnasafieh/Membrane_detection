@@ -59,12 +59,22 @@ if __name__ == "__main__":
     im=grayschale('image-0.tif')
     im_roi=grayschale('new_image_2.jpg')
 
+<<<<<<< HEAD
     im2= sharpen(im)
     im2_roi= sharpen(im_roi)
+=======
+im=grayschale('image-0.tif')
+#im_roi=grayschale('new_image_2.jpg')
+>>>>>>> 8e876872457ae923a8f7ab89121f6dfe431e5d8a
 
     im3=edge_detec(im2,0.5)
     im3_roi=edge_detec(im2_roi,0.5)
 
+<<<<<<< HEAD
+=======
+im3=edge_detec(im2,0.5)
+#im3_roi=edge_detec(im2_roi,0.5)
+>>>>>>> 8e876872457ae923a8f7ab89121f6dfe431e5d8a
 
     plot_comparison(im2, im3, "edge detect segma 0.5 no roi")
 
@@ -88,6 +98,7 @@ if __name__ == "__main__":
     # remove artifacts connected to image border
     cleared = clear_border(bw)
 
+<<<<<<< HEAD
     # label image regions
     label_image = label(cleared)
     # to make the background transparent, pass the value of `bg_label`,
@@ -109,4 +120,34 @@ if __name__ == "__main__":
     ax.set_axis_off()
     plt.tight_layout()
     plt.show()
+=======
+# apply threshold
+# thresh = threshold_otsu(image)
+# bw = closing(image > thresh, square(3))
+
+# # remove artifacts connected to image border
+# cleared = clear_border(bw)
+
+# # label image regions
+# label_image = label(cleared)
+# # to make the background transparent, pass the value of `bg_label`,
+# # and leave `bg_color` as `None` and `kind` as `overlay`
+# image_label_overlay = label2rgb(label_image, image=image, bg_label=0)
+
+# fig, ax = plt.subplots(figsize=(10, 6))
+# ax.imshow(image_label_overlay)
+
+# for region in regionprops(label_image):
+#     # take regions with large enough areas
+#     if region.area >= 100:
+#         # draw rectangle around segmented coins
+#         minr, minc, maxr, maxc = region.bbox
+#         rect = mpatches.Rectangle((minc, minr), maxc - minc, maxr - minr,
+#                                   fill=False, edgecolor='red', linewidth=2)
+#         ax.add_patch(rect)
+
+# ax.set_axis_off()
+# plt.tight_layout()
+# plt.show()
+>>>>>>> 8e876872457ae923a8f7ab89121f6dfe431e5d8a
 
