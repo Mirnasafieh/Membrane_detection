@@ -78,35 +78,35 @@ if __name__ == "__main__":
     # plot_comparison(im3,gradient , "gradient")
     # plt.show()
 
-""" the following code recognized subpopulations in the picture, maybe we could use it to eliminate them and clean the picture"""
-#image = im
+    """ the following code recognized subpopulations in the picture, maybe we could use it to eliminate them and clean the picture"""
+    image = im3
 
-# # apply threshold
-# thresh = threshold_otsu(image)
-# bw = closing(image > thresh, square(3))
+    # apply threshold
+    thresh = threshold_otsu(image)
+    bw = closing(image > thresh, square(3))
 
-# # remove artifacts connected to image border
-# cleared = clear_border(bw)
+    # remove artifacts connected to image border
+    cleared = clear_border(bw)
 
-# # label image regions
-# label_image = label(cleared)
-# # to make the background transparent, pass the value of `bg_label`,
-# # and leave `bg_color` as `None` and `kind` as `overlay`
-# image_label_overlay = label2rgb(label_image, image=image, bg_label=0)
+    # label image regions
+    label_image = label(cleared)
+    # to make the background transparent, pass the value of `bg_label`,
+    # and leave `bg_color` as `None` and `kind` as `overlay`
+    image_label_overlay = label2rgb(label_image, image=image, bg_label=0)
 
-# fig, ax = plt.subplots(figsize=(10, 6))
-# ax.imshow(image_label_overlay)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.imshow(image_label_overlay)
 
-# for region in regionprops(label_image):
-#     # take regions with large enough areas
-#     if region.area >= 100:
-#         # draw rectangle around segmented coins
-#         minr, minc, maxr, maxc = region.bbox
-#         rect = mpatches.Rectangle((minc, minr), maxc - minc, maxr - minr,
-#                                 fill=False, edgecolor='red', linewidth=2)
-#         ax.add_patch(rect)
+    for region in regionprops(label_image):
+        # take regions with large enough areas
+        if region.area >= 100:
+            # draw rectangle around segmented coins
+            minr, minc, maxr, maxc = region.bbox
+            rect = mpatches.Rectangle((minc, minr), maxc - minc, maxr - minr,
+                                    fill=False, edgecolor='red', linewidth=2)
+            ax.add_patch(rect)
 
-# ax.set_axis_off()
-# plt.tight_layout()
-# plt.show()
+    ax.set_axis_off()
+    plt.tight_layout()
+    plt.show()
 
