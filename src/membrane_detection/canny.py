@@ -79,7 +79,7 @@ if __name__ == "__main__":
     # plt.show()
 
 """ the following code recognized subpopulations in the picture, maybe we could use it to eliminate them and clean the picture"""
-# image = im3
+#image = im
 
 # # apply threshold
 # thresh = threshold_otsu(image)
@@ -103,7 +103,7 @@ if __name__ == "__main__":
 #         # draw rectangle around segmented coins
 #         minr, minc, maxr, maxc = region.bbox
 #         rect = mpatches.Rectangle((minc, minr), maxc - minc, maxr - minr,
-#                                   fill=False, edgecolor='red', linewidth=2)
+#                                 fill=False, edgecolor='red', linewidth=2)
 #         ax.add_patch(rect)
 
 # ax.set_axis_off()
