@@ -86,7 +86,7 @@ def threshold_otsu_img(img):
     return thresh
 
 if __name__ == "__main__":
-    im_gray=grayschale('new_image.tif')
+    im_gray=grayschale('image-0.tif')
     im_sharp= sharpen(im_gray)
 
     filtered=gaussian_filter(im_sharp, sigma=1)
