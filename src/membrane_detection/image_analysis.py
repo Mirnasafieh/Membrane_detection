@@ -35,12 +35,8 @@ def create_hotogram(img):
     plt.xlabel('pixel value (a.u.)')
     plt.ylabel('counts')
     plt.show()
-<<<<<<< HEAD
 b=create_hotogram(a)
 
-=======
-#create_hotogram(a)
->>>>>>> 5164e0b3cc533a8e6ca36df2802d34c3640d9a2c
 
 def image_thresh(img, thresh):
     """ This function when given a picture and a threshold value, returns an image after thresholding"""
