@@ -28,6 +28,7 @@ from scipy.ndimage import gaussian_filter
 from scipy import misc
 import matplotlib.pyplot as plt
 from skimage import filters
+from tifffile import imsave
 
 def plot_comparison(original, filtered, filter_name):
     """plots two images together for comparison"""
@@ -108,7 +109,6 @@ if __name__ == "__main__":
     plot_comparison(im_sharp, opened_edge_closed, 'final')
 
     plt.show()
-    
     
 
 

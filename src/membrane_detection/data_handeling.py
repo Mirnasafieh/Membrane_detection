@@ -1,6 +1,7 @@
 import pandas as pd
 import pathlib
-
+from tifffile import imsave
+import numpy as np
 
 def data_import(filename):
     """this function import an excel file with the data and returns a pandas dataframe"""
@@ -18,6 +19,9 @@ def export_to_excel(df, name):
     """This function only exports the dataframe back into excel with a given name"""
     df.to_excel(name)
 
+def export_tif(img, name):
+    """This function exports an img as tif with a given name"""
+    imsave(name, img)
 
 if __name__ == "__main__":
     df1=data_import('Mirna project data.xlsx')
