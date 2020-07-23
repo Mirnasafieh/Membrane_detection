@@ -57,8 +57,9 @@ def image_measurements(img):
 
 
 def compare_images(img1, img2):
-    new_compare = np.logical_and(edge_image, edge_image2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True)
-    return new_compare
+    # print(np.argwhere(img1 == True))
+    # new_compare = np.logical_and(edge_image, edge_image2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True)
+    # return new_compare
 
 if __name__ == "__main__":
     gray_image = grayschale("new_image.tif")
@@ -73,8 +74,8 @@ if __name__ == "__main__":
     plt.imshow(edge_image2, cmap = 'gray')
     plt.title('2nd image'), plt.xticks([]), plt.yticks([])
     plt.show()
-    new = compare_images(image1, image2) 
-    plt.imshow(new, cmap = 'gray')
-    plt.title('comparison image'), plt.xticks([]), plt.yticks([])
-    plt.show()
-    image_measurements(new)
+    compare_images(edge_image, edge_image2) 
+    # plt.imshow(new, cmap = 'gray')
+    # plt.title('comparison image'), plt.xticks([]), plt.yticks([])
+    # plt.show()
+    # image_measurements(new)
