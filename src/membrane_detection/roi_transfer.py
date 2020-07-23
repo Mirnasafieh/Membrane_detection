@@ -57,25 +57,45 @@ def image_measurements(img):
 
 
 def compare_images(img1, img2):
-    # print(np.argwhere(img1 == True))
-    # new_compare = np.logical_and(edge_image, edge_image2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True)
-    # return new_compare
+    compare_im = np.copy(img2)
+    compare_im = np.where(img1 == False, 0, compare_im)
+    return (compare_im)
 
 if __name__ == "__main__":
-    gray_image = grayschale("new_image.tif")
+    original = skimage.io.imread("image-0.tif")
+    gray_image = grayschale("image-0.tif")
     sharp_image = sharpen(gray_image)
-    edge_image = edge_detec(sharp_image, 0.5)
-    plt.imshow(edge_image, cmap = 'gray')
-    plt.title('1st image'), plt.xticks([]), plt.yticks([])
-    plt.show()
-    gray_image2 = grayschale("new_image.tif")
-    sharp_image2 = sharpen(gray_image2)
-    edge_image2 = edge_detec(sharp_image2, 0.5)
-    plt.imshow(edge_image2, cmap = 'gray')
-    plt.title('2nd image'), plt.xticks([]), plt.yticks([])
-    plt.show()
-    compare_images(edge_image, edge_image2) 
-    # plt.imshow(new, cmap = 'gray')
-    # plt.title('comparison image'), plt.xticks([]), plt.yticks([])
+    bf_im = edge_detec(sharp_image, 0.5)
+    # plt.imshow(bf_im, cmap = 'gray')
+    # plt.title('BF image'), plt.xticks([]), plt.yticks([])
     # plt.show()
+    fl_im = grayschale("image-1.tif")
+    # plt.imshow(fl_im, cmap = 'gray')
+    # plt.title('fluorescent image'), plt.xticks([]), plt.yticks([])
+    # plt.show()
+    new_im = rgb2gray(compare_images(bf_im, fl_im))
+    # grayscale = rgb2gray(original)
+    # print(new_im.shape)
+    # print(type(new))
+
+    fig, axes = plt.subplots(nrows=2, ncols=2, sharex=True, sharey=True, figsize=(8, 8))
+    axes = axes.ravel()
+
+    axes[0].imshow(original, cmap=plt.cm.gray)
+    axes[0].set_title('Original image')
+
+    axes[1].imshow(bf_im, cmap=plt.cm.gray)
+    axes[1].set_title('BF image')
+
+    axes[2].imshow(fl_im, cmap=plt.cm.gray)
+    axes[2].set_title('fluorescent image')
+
+    axes[3].imshow(new_im, cmap=plt.cm.gray)
+    axes[3].set_title('comparison image')
+
+    for ax in axes:
+        ax.axis('off')
+
+    plt.tight_layout()
+    plt.show()
     # image_measurements(new)
