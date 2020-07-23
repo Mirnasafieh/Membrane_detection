@@ -28,6 +28,10 @@ from scipy.ndimage import gaussian_filter
 from scipy import misc
 import matplotlib.pyplot as plt
 from skimage import filters
+from scipy import ndimage, misc
+import scipy
+from skimage import measure
+
 
 def plot_comparison(original, filtered, filter_name):
     """plots two images together for comparison"""
@@ -49,7 +53,7 @@ def grayschale(img):
 
 def sharpen(img):
     """sharpens the image"""
-    result = unsharp_mask(img, radius=2, amount=2)
+    result = unsharp_mask(img, radius=3, amount=3)
     return result
 
 def edge_detec(img,sigma_val):
@@ -86,64 +90,72 @@ def threshold_otsu_img(img):
     return thresh
 
 if __name__ == "__main__":
-    im_gray=grayschale('new_image.tif')
-    im_sharp= sharpen(im_gray)
-
-    filtered=gaussian_filter(im_sharp, sigma=1)
-    plot_comparison(im_sharp, filtered, 'opened1')
-
-    opened = open_img (filtered)
-    plot_comparison(filtered, opened, 'opened1')
-
-    opened_edge=edge_detec(opened,0.5)
-    plot_comparison(opened, opened_edge, 'edgedetec2')
-
-    dialated=dialate_img (opened_edge)
-    plot_comparison(opened_edge, dialated, 'dialated3')
-
-    opened_edge_closed=close_img (dialated)
-    
-    plot_comparison(opened_edge, opened_edge_closed, 'closed4')
-
-    plot_comparison(im_sharp, opened_edge_closed, 'final')
-
-    plt.show()
-    
-    
-
-
-
-
-
-    # """ the following code recognized subpopulations in the picture, maybe we could use it to eliminate them and clean the picture"""
-    # image = im3
-
-    # # apply threshold
-    # thresh = threshold_otsu(image)
-    # bw = closing(image > thresh, square(3))
-
-    # # remove artifacts connected to image border
-    # cleared = clear_border(bw)
-
-    # # label image regions
-    # label_image = label(cleared)
-    # # to make the background transparent, pass the value of `bg_label`,
-    # # and leave `bg_color` as `None` and `kind` as `overlay`
-    # image_label_overlay = label2rgb(label_image, image=image, bg_label=0)
-
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # ax.imshow(image_label_overlay)
-
-    # for region in regionprops(label_image):
-    #     # take regions with large enough areas
-    #     if region.area >= 100:
-    #         # draw rectangle around segmented coins
-    #         minr, minc, maxr, maxc = region.bbox
-    #         rect = mpatches.Rectangle((minc, minr), maxc - minc, maxr - minr,
-    #                                 fill=False, edgecolor='red', linewidth=2)
-    #         ax.add_patch(rect)
-
-    # ax.set_axis_off()
-    # plt.tight_layout()
+    # original = skimage.io.imread('new_image.tif')
+    # plt.imshow(original, cmap = 'gray')
+    # plt.title('original'), plt.xticks([]), plt.yticks([])
     # plt.show()
 
+    im_gray=grayschale('new_image.tif')
+    # plt.imshow(im_gray, cmap = 'gray')
+    # plt.title('grayscale'), plt.xticks([]), plt.yticks([])
+    # plt.show()
+    
+    im_sharp= sharpen(im_gray)
+    # plt.imshow(im_sharp, cmap = 'gray')
+    # plt.title('sharp'), plt.xticks([]), plt.yticks([])
+    # plt.show()
+    
+    # edge_sobel = filters.sobel(im_sharp)
+    # edge_sobel = scipy.ndimage.sobel(im_sharp, axis=-1, output=None, mode='reflect', cval=10)
+    # plt.imshow(edge_sobel, cmap = 'gray')
+    # plt.title('edge_sobel'), plt.xticks([]), plt.yticks([])
+    # plt.show()
+
+    opened_edge=edge_detec(im_sharp,0)
+    # plt.imshow(opened_edge, cmap = 'gray')
+    # plt.title('edge detection'), plt.xticks([]), plt.yticks([])
+    # plt.show()
+
+    # after_th = threshold_otsu_img(opened_edge)
+    # plt.imshow(after_th, cmap = 'gray')
+    # plt.title('after_th'), plt.xticks([]), plt.yticks([])
+    # plt.show()
+     
+    dialated=dialate_img (opened_edge)
+    # plt.imshow(dialated, cmap = 'gray')
+    # plt.title('dialated'), plt.xticks([]), plt.yticks([])
+    # plt.show()
+
+    opened_edge_closed=close_img (dialated)
+    # plt.imshow(opened_edge_closed, cmap = 'gray')
+    # plt.title('opened_edge_closed'), plt.xticks([]), plt.yticks([])
+    # plt.show()
+
+    opened = open_img (opened_edge_closed)
+    # plt.imshow(opened, cmap = 'gray')
+    # plt.title('opened'), plt.xticks([]), plt.yticks([])
+    # plt.show()
+
+    filtered=gaussian_filter(opened, sigma=0)
+    # plt.imshow(filtered, cmap = 'gray')
+    # plt.title('gaussian_filter'), plt.xticks([]), plt.yticks([])
+    # plt.show()
+
+    after_th = threshold_otsu_img(filtered)
+    plt.imshow(after_th, cmap = 'gray')
+    plt.title('after_th'), plt.xticks([]), plt.yticks([])
+    plt.show()
+
+
+
+    # contours = measure.find_contours(filtered, 0.9)
+    # fig, ax = plt.subplots()
+    # ax.imshow(filtered, cmap=plt.cm.gray)
+
+    # for n, contour in enumerate(contours):
+    #     ax.plot(contour[:, 1], contour[:, 0], linewidth=2)
+
+    # ax.axis('image')
+    # ax.set_xticks([])
+    # ax.set_yticks([])
+    # plt.show()
