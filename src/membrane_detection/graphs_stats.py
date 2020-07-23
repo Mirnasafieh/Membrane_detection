@@ -30,3 +30,9 @@ def save_graph(graph, file_name, parameter):
     plt.savefig(saving_name+ parameter +".pdf")
 
 if __name__ == "__main__":
+    df=data_import("ApoER2 colocalization.xlsx")
+    sns.set(style="whitegrid")
+
+
+
+    plt.show()
