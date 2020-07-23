@@ -40,7 +40,8 @@ INSTALL_REQUIRES = [
     'xlrd',
     'pims',
     'scikit-image',
-    'cv2',
+    'openCV',
+    'openpyxl'
 ]
 
 ###################################################################
