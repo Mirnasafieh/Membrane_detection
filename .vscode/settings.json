@@ -1,3 +1,8 @@
 {
-    "python.pythonPath": "d:\\DannyM19\\Desktop\\pHd-Mirna\\proposal\\miniconda\\envs\\membrane\\python.exe"
+    "python.testing.pytestArgs": [
+        "build"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true
 }
