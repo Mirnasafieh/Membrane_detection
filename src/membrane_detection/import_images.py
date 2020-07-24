@@ -2,6 +2,7 @@ import pathlib
 
 
 def import_images(foldername):
+    """Return list of pairs of images (fluorecent anf BF)"""
     images_data = []
     pathname = pathlib.Path(foldername)
     for file1 in pathname.iterdir():
@@ -15,5 +16,6 @@ def import_images(foldername):
                     images_data.append(tup)
     return images_data
 
+
 if __name__ == "__main__":
-    import_images('images')
+    print(import_images('images'))
