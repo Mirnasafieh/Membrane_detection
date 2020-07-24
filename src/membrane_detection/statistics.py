@@ -1,7 +1,7 @@
-import researchpy
 import pandas as pd
 import pathlib
 from openpyxl import load_workbook
+import researchpy
 
 
 def groups_IOD(results_file):

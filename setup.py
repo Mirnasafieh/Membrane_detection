@@ -41,7 +41,8 @@ INSTALL_REQUIRES = [
     'pims',
     'scikit-image',
     'openCV',
-    'openpyxl'
+    'openpyxl',
+    'seaborn',
 ]
 
 ###################################################################
