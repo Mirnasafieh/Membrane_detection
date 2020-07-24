@@ -1,8 +1,8 @@
-from skimage.filters import meijering, sato, frangi, hessian, threshold_otsu, rank, unsharp_mask
 import matplotlib.pyplot as plt
-from skimage.color import rgb2gray, label2rgb
 import skimage
 import skimage.io 
+from skimage.filters import meijering, sato, frangi, hessian, threshold_otsu, rank, unsharp_mask
+from skimage.color import rgb2gray, label2rgb
 import numpy as np
 from scipy import ndimage as ndi
 from PIL import Image, ImageEnhance
@@ -37,90 +37,47 @@ def grayschale(img):
 
     return grayscale
 
-def sharpen(img):
-    """sharpens the image"""
-    result = unsharp_mask(img, radius=2, amount=2)
-    return result
+def membrane_detect(img_grayscale):
+    """This fuction detects the membrane from a series of manipulations on a grayscale bright-field image"""
+    """input: grayscale image"""
+    """output: binary image"""
 
-def edge_detec(img,sigma_val):
-    """edge detection using skimage canny"""
-    edges = feature.canny(img, sigma=sigma_val)
-    return edges
-
-def close_img (img):
-    phantom = img
-    phantom[10:30, 200:210] = 0
-    selem = disk(10)
-    closed = closing(phantom, selem)
-    return closed 
-
-def open_img (img):
-    selem = disk(3)
-    opened = opening(img, selem)
-    return opened 
-
-def dialate_img (img):
-    selem = disk(4)
-    dialated=dilation(img, selem)
-    return dialated
-
-def gaussian_filter_img (img):
-    filtered=gaussian_filter(img, sigma=0.5)
-
-    return filtered
-
-def threshold_otsu_img(img):
-    image = img
-    val = filters.threshold_otsu(image)
-    thresh=image < val
-    return thresh
-
-def bf_prep(img):
-    
-if __name__ == "__main__":
-    im_gray=grayschale('new_image_4.tif')
-    im_sharp= sharpen(im_gray)
-
-    """option 1"""
-
-    #gray scale picture:
-    img = im_sharp
+    #sharpened image:
+    im_sharp= unsharp_mask(img_grayscale, radius=2, amount=2)
 
     # Equalization threshold:
-    p2, p98 = np.percentile(img, (2, 98))
-    a = exposure.rescale_intensity(im_gray, in_range=(p2, p98))
-    plot_comparison(im_sharp, a, 'equalize')
-    plt.show()
+    p2, p98 = np.percentile(im_sharp, (2, 98))
+    im_eq = exposure.rescale_intensity(img_grayscale, in_range=(p2, p98))
 
     #Gaussian:
-    b=gaussian_filter(a, sigma=2.7)
-    plot_comparison(a, b, 'gaussian')
-    plt.show()
+    im_gaus=gaussian_filter(im_eq, sigma=2.7)
 
     #Edge detection: 
-    d=edge_detec(b,1)
-    plot_comparison(b, d, 'edge')
-    plt.show()
+    im_edge=feature.canny(im_gaus, sigma=1)
 
     #remove small objects:
-    e = morphology.remove_small_objects(d, 200, in_place=True, connectivity=50)
-    plot_comparison(d, e, 'remove small objects')
-    plt.show()
+    im_clean1 = morphology.remove_small_objects(im_edge, 200, in_place=True, connectivity=50)
 
     #close:
-    f=close_img (e)
-    plot_comparison(e, f, 'close')
-    plt.show()
+    phantom = im_clean1
+    phantom[10:30, 200:210] = 0
+    selem_c = disk(10)
+    im_closed = closing(phantom, selem_c)
 
     #dialated:
-    g=dialate_img (f)
-    plot_comparison(img, g, 'dialated')
-    plt.show()
+    selem_d = disk(4)
+    im_dialated=dilation(im_closed, selem_d)
 
 
     #remove small objects:
-    h = morphology.remove_small_objects(g, 1700, in_place=True, connectivity=200)
-    plot_comparison(img, h, 'remove small objects')
+    im_final = morphology.remove_small_objects(im_dialated, 1700, in_place=True, connectivity=200)
+
+    return im_final
+
+    
+if __name__ == "__main__":
+
+    img= grayschale('image-0.tif')
+    membrane=membrane_detect(img)
+    plot_comparison(img, membrane, 'membrane detection')
     plt.show()
-
-
