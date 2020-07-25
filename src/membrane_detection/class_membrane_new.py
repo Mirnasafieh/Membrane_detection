@@ -5,14 +5,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import skimage
 import skimage.io
-from scipy.ndimage import gaussian_filter
-from skimage.filters import meijering, sato, frangi, hessian, threshold_otsu, rank, unsharp_mask
-from skimage.filters import hessian, threshold_otsu, rank, unsharp_mask
-from skimage import data, exposure, img_as_float, morphology, filters, feature, color
-from skimage.morphology import erosion, dilation, opening, closing, white_tophat, flood_fill, black_tophat, skeletonize, convex_hull_image, disk, closing, square
-import seaborn as sns
-from openpyxl import load_workbook
 import researchpy
+import seaborn as sns
+from scipy.ndimage import gaussian_filter
+# from skimage.filters import meijering, sato, frangi, hessian, threshold_otsu, rank, unsharp_mask
+from skimage.filters import unsharp_mask
+from skimage import exposure, morphology, feature
+# from skimage.morphology import erosion, dilation, opening, closing, white_tophat, flood_fill, black_tophat, skeletonize, convex_hull_image, disk, closing, square
+from skimage.morphology import dilation, closing, disk
+from openpyxl import load_workbook
 from skimage.color import rgb2gray
 
 
