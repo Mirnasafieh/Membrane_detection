@@ -31,9 +31,8 @@ def export_tif(img, name):
     imsave(name, img)
 
 if __name__ == "__main__":
-    df1=data_import('Mirna project data.xlsx')
-    df2=data_import('test for merge.xlsx')
-    df3=data_merge(df1,df2)
+    df1=data_import('ApoER2 colocalization.xlsx')
+    df2=data_import('try merge.xlsx')
+    df3=data_merge(df1,df2,2)
     export_to_excel(df3, "testing export.xlsx")
 
-    
