@@ -20,9 +20,8 @@ from skimage.color import rgb2gray
 
 class MembraneDetect:
 
-    def __init__(self, foldername, old_data=None, N=1):
+    def __init__(self, foldername, old_data=None):
         self.images_list = []
-        self.N = N
         self.compartment_names = ["Rab5", "Rab7", "CatD", "Rab11", "Nucleus"]
         self.data = pd.DataFrame()
         self.old_data = pd.DataFrame()
@@ -139,7 +138,6 @@ class MembraneDetect:
             total_area, stained_area, percent_area, total_intensity, mean_intensity, intigrated_optical_density = mem_det.image_measurements(new_im, cell_genotype, i)
             results.update({
                                 "Cell genotype": cell_genotype,
-                                "N": self.N,
                                 "Cell number": cell_num,
                                 "total area": total_area,
                                 "stained area": stained_area,
@@ -152,7 +150,7 @@ class MembraneDetect:
 
     def data_merge(self):
         """This function merges between two dataframes - the existing one and the output dataframe according to cell genotype, N, and cell number"""
-        self.data = pd.merge(self.data, self.old_data, how='left', left_on=['Cell genotype', 'N', 'Cell number'], right_on=['Cell genotype', 'N', 'Cell number'])
+        self.data = pd.merge(self.data, self.old_data, how='left', left_on=['Cell genotype', 'Cell number'], right_on=['Cell genotype', 'Cell number'])
 
     def barplot_E3E4(self):
         """ This function creates a bar graph according to the parameters given"""
@@ -182,8 +180,8 @@ class MembraneDetect:
 
     def export_graphs_compartment(self):
         """export graphs of receptor to PDF"""
-        # all_comp_lines = mem_det.all_compartments_lines()
-        # mem_det.save_graph(all_comp_lines, "compartments lines")
+        all_comp_lines = mem_det.all_compartments_lines()
+        mem_det.save_graph(all_comp_lines, "compartments lines")
         all_comp_bars = mem_det.all_compartments_bars()
         mem_det.save_graph(all_comp_bars, "compartments bars")
 
@@ -253,6 +251,6 @@ class MembraneDetect:
 
 
 if __name__ == "__main__":
-    mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx", 2)
+    mem_det = MembraneDetect('images', "hila ApoER2 colocalization.xlsx")
     # mem_det = MembraneDetect('images')
     mem_det.all_pipeline()

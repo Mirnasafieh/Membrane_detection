@@ -38,7 +38,6 @@ INSTALL_REQUIRES = [
     'pandas',
     'dask',
     'xlrd',
-    'pims',
     'scikit-image',
     'openCV',
     'openpyxl',
