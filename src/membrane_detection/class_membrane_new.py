@@ -19,27 +19,27 @@ from skimage.color import rgb2gray
 
 class MembraneDetect:
 
-    def __init__(self, foldername):
-        self.image_bf = []
-        self.image_fl = []
+    def __init__(self, foldername, old_data=None):
+        # self.image_bf = []
+        # self.image_fl = []
         self.images_list = []
         # self.results = {}
         self.compartment_names = ["Rab5", "Rab7", "CatD", "Rab11", "Nucleus"]
         self.data = pd.DataFrame()
+        self.old_data = pd.DataFrame()
         if pathlib.Path(foldername).is_dir():
             self.foldername = pathlib.Path(foldername)
             if len(list(self.foldername.glob('**/*.tif'))) == 0:
                 raise ValueError(f"ValueError exception thrown:'{foldername}' is empty")
         else:
             raise ValueError(f"ValueError exception thrown:'{foldername}' does not exist")
-        # # only if old_data exiists
-        # if pathlib.Path(old_data).exists():
-        #     self.data = pd.read_excel(old_data)
-        #     if self.data.empty:
-        #         raise ValueError(f"ValueError exception thrown:'{old_data}' is empty")
-        # else:
-        #     raise ValueError(f"ValueError exception thrown:'{old_data}' does not exist")
-        
+        if (old_data is not None):
+            if (pathlib.Path(old_data).exists()):
+                self.old_data = pd.read_excel(old_data)
+            if self.old_data.empty:
+                print("'{old_data}' is empty")
+        print(self.old_data)
+
     def import_images(self):
         """Return list of pairs of image pathlibs (fluorecent anf BF)"""
         for file1 in self.foldername.iterdir():
@@ -140,12 +140,12 @@ class MembraneDetect:
                                 "total_intensity": total_intensity,
                                 "mean_intensity": mean_intensity,
                                 "intigrated_optical_density": intigrated_optical_density
-                                })
+                            })
             self.data = self.data.append((pd.DataFrame.from_dict(results, orient='index')).T)
 
-    # def data_merge(self, df):
-    #     """This function merges between two dataframes - the existing one and the output dataframe according to cell genotype, N, and cell number"""
-    #     self.data = pd.merge(self.data, df, how='left', left_on=['cell genotype' , 'N', 'Cell number'], right_on=['cell genotype' ,'N' ,'Cell number'])
+    def data_merge(self):
+        """This function merges between two dataframes - the existing one and the output dataframe according to cell genotype, N, and cell number"""
+        self.data = pd.merge(self.data, self.old_data, how='left', left_on=['cell genotype' , 'N', 'Cell number'], right_on=['cell genotype' ,'N' ,'Cell number'])
 
     def barplot_E3E4(self):
         """ This function creates a bar graph according to the parameters given"""
@@ -154,27 +154,31 @@ class MembraneDetect:
 
     def all_compartments_lines(self):
         """This function creates a line graph of both genottypes in all the compartments for given receptor"""
-
         graph = sns.catplot(x="compartment", y="M1", hue="cell genotype", palette="Greens", markers=["^", "o"],
                             linestyles=["--", "--"], kind="point", data=self.data)
         return graph
 
-    # def all_compartments_bars(self):
-    #     """This function creates a barplot map of both genotypes in all the compartments for given receptor"""    
-    #     g = sns.FacetGrid(self.data, col="compartment", height=4, aspect=.5)
-    #     result = g.map(sns.barplot, "cell genotype", "M1", palette='Greens')
-    #     return result
+    def all_compartments_bars(self):
+        """This function creates a barplot map of both genotypes in all the compartments for given receptor"""
+        g = sns.FacetGrid(self.data, col="compartment", height=4, aspect=.5)
+        result = g.map(sns.barplot, "cell genotype", "M1", palette='Greens')
+        return result
 
     def save_graph(self, graph, file_name):
         saving_name = file_name.split()[0]
         plt.savefig(saving_name + ".pdf")
 
-    def export_graphs(self):
-        """export graphs to PDF"""
+    def export_graphs_receptor(self):
+        """export graphs of receptor to PDF"""
         barplot_graph = mem_det.barplot_E3E4()
-        # line_graph = mem_det.all_compartments_lines()
         mem_det.save_graph(barplot_graph, "barplot")
-        # mem_det.save_graph(line_graph, "line graph")
+
+    def export_graphs_compartment(self):
+        """export graphs of receptor to PDF"""
+        all_comp_lines = mem_det.all_compartments_lines()
+        mem_det.save_graph(all_comp_lines, "compartments lines")
+        all_comp_bars = mem_det.all_compartments_bars()
+        mem_det.save_graph(all_comp_bars, "compartments bars")
 
     def groups_IOD(self):
         """Returns two groups of IOD parameter for receptor variable sorted by genotype"""
@@ -215,23 +219,31 @@ class MembraneDetect:
                 result_table.to_excel(writer, sheet_name=name_var + '_2')
                 writer.save()
 
-    def statistics_analysis_and_export(self):
+    def statistics_analysis_receptor(self):
         g1_receptor, g2_receptor = mem_det.groups_IOD()
         des, res = mem_det.stat_groups(g1_receptor, g2_receptor)
         mem_det.export_stat(des, res, "Receptor")
-        # compartment_names = ["Rab5", "Rab7", "CatD", "Rab11", "Nucleus"]
-        # for name_com in compartment_names:
-        #     g1_com, g2_com = mem_det.groups_colocalization(name_com)
-        #     if (len(g1_com) == 0) | (len(g2_com) == 0):
-        #         print("data of '{name_com}' is missing")
-        #     else:
-        #         des, res = mem_det.stat_groups(g1_com, g2_com)
-        #         mem_det.export_stat(des, res, name_com)
+
+    def statistics_analysis_compartment(self):
+        for name_com in self.compartment_names:
+            g1_com, g2_com = mem_det.groups_colocalization(name_com)
+            if (len(g1_com) == 0) | (len(g2_com) == 0):
+                print("data of '{name_com}' is missing")
+            else:
+                des, res = mem_det.stat_groups(g1_com, g2_com)
+                mem_det.export_stat(des, res, name_com)
+
+    def all_pipeline(self):
+        mem_det.import_images()
+        mem_det.all_images_analysis()
+        mem_det.export_graphs_receptor()
+        mem_det.statistics_analysis_receptor()
+        if self.old_data.empty == False:
+            mem_det.data_merge()
+            mem_det.export_graphs_compartment()
+            mem_det.statistics_analysis_compartment()
 
 
 if __name__ == "__main__":
     mem_det = MembraneDetect('images')
-    mem_det.import_images()
-    mem_det.all_images_analysis()
-    mem_det.export_graphs()
-    mem_det.statistics_analysis_and_export()
+    mem_det.all_pipeline()
