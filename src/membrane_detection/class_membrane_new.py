@@ -1,12 +1,13 @@
 import pathlib
 import pandas as pd
-from tifffile import imsave
+# from tifffile import imsave
 import numpy as np
 import matplotlib.pyplot as plt
 import skimage
 import skimage.io
 from scipy.ndimage import gaussian_filter
 from skimage.filters import meijering, sato, frangi, hessian, threshold_otsu, rank, unsharp_mask
+from skimage.filters import hessian, threshold_otsu, rank, unsharp_mask
 from skimage import data, exposure, img_as_float, morphology, filters, feature, color
 from skimage.morphology import erosion, dilation, opening, closing, white_tophat, flood_fill, black_tophat, skeletonize, convex_hull_image, disk, closing, square
 import seaborn as sns
@@ -21,8 +22,9 @@ class MembraneDetect:
         self.image_bf = []
         self.image_fl = []
         self.images_list = []
-        self.results = {}
-        self.data = pd.DataFrame
+        # self.results = {}
+        self.compartment_names = ["Rab5", "Rab7", "CatD", "Rab11", "Nucleus"]
+        self.data = pd.DataFrame()
         if pathlib.Path(foldername).is_dir():
             self.foldername = pathlib.Path(foldername)
             if len(list(self.foldername.glob('**/*.tif'))) == 0:
@@ -94,7 +96,7 @@ class MembraneDetect:
         # cell_genotype = genotype
         # N = N
         # cell_number = cell_number
-        total_area = img.size()
+        total_area = img.size
         stained_area = np.count_nonzero(img)
         percent_area = stained_area / total_area
         total_intensity = np.sum(img)
@@ -119,15 +121,16 @@ class MembraneDetect:
 
     def all_images_analysis(self):
         """go through all images and adds measurements to df"""
-        for i in range (len(self.images_list)):
+        results = {}
+        for i in range(len(self.images_list)):
             image_bf = mem_det.grayscale(self.images_list[i][0])
-            image_bf.membrane_detect()
+            mem_det.membrane_detect(image_bf)
             image_fl = mem_det.grayscale(self.images_list[i][1])
             new_im = mem_det.compare_images(image_bf, image_fl)
-            image_name = self.images_list[i][0].name()
+            image_name = self.images_list[i][0].name
             cell_genotype = mem_det.cell_genotype(image_name)
             total_area, stained_area, percent_area, total_intensity, mean_intensity, intigrated_optical_density = mem_det.image_measurements(new_im, cell_genotype, i)
-            self.results.update({
+            results.update({
                                 "Cell genotype": cell_genotype,
                                 "Cell number": i,
                                 "total area": total_area,
@@ -137,7 +140,7 @@ class MembraneDetect:
                                 "mean_intensity": mean_intensity,
                                 "intigrated_optical_density": intigrated_optical_density
                                 })
-        self.data = pd.DataFrame.from_dict(self.results, orient='index')
+            self.data = self.data.append((pd.DataFrame.from_dict(results, orient='index')).T)
 
     # def data_merge(self, df):
     #     """This function merges between two dataframes - the existing one and the output dataframe according to cell genotype, N, and cell number"""
@@ -145,11 +148,12 @@ class MembraneDetect:
 
     def barplot_E3E4(self):
         """ This function creates a bar graph according to the parameters given"""
-        graph = sns.barplot(y="intigrated_optical_density", palette="Greens", data=self.data).set_title("Receptor IOD")
+        graph = sns.barplot(x="Cell genotype", y="intigrated_optical_density", palette="Greens", data=self.data).set_title("Receptor IOD")
         return graph
 
     def all_compartments_lines(self):
         """This function creates a line graph of both genottypes in all the compartments for given receptor"""
+
         graph = sns.catplot(x="compartment", y="M1", hue="cell genotype", palette="Greens", markers=["^", "o"],
                             linestyles=["--", "--"], kind="point", data=self.data)
         return graph
@@ -167,14 +171,14 @@ class MembraneDetect:
     def export_graphs(self):
         """export graphs to PDF"""
         barplot_graph = mem_det.barplot_E3E4()
-        line_graph = mem_det.all_compartments_lines()
+        # line_graph = mem_det.all_compartments_lines()
         mem_det.save_graph(barplot_graph, "barplot")
-        mem_det.save_graph(line_graph, "line graph")
+        # mem_det.save_graph(line_graph, "line graph")
 
     def groups_IOD(self):
         """Returns two groups of IOD parameter for receptor variable sorted by genotype"""
-        group1 = self.data['intigrated_optical_density'].where((self.data['cell genotype'] == 'e3') | (self.data['cell genotype'] == 'E3')).dropna()
-        group2 = self.data['intigrated_optical_density'].where((self.data['cell genotype'] == 'e4') | (self.data['cell genotype'] == 'E4')).dropna()
+        group1 = self.data['intigrated_optical_density'].where(self.data['Cell genotype'] == 'E3').dropna()
+        group2 = self.data['intigrated_optical_density'].where(self.data['Cell genotype'] == 'E4').dropna()
         if (len(group1) == 0) | (len(group2) == 0):
             raise ValueError(f"ValueError exception thrown: data is missing")
         return group1, group2
@@ -214,18 +218,19 @@ class MembraneDetect:
         g1_receptor, g2_receptor = mem_det.groups_IOD()
         des, res = mem_det.stat_groups(g1_receptor, g2_receptor)
         mem_det.export_stat(des, res, "Receptor")
-        compartment_names = ["Rab5", "Rab7", "CatD", "Rab11", "Nucleus"]
-        for name_com in compartment_names:
-            g1_com, g2_com = mem_det.groups_colocalization(name_com)
-            if (len(g1_com) == 0) | (len(g2_com) == 0):
-                print("data of '{name_com}' is missing")
-            else:
-                des, res = mem_det.stat_groups(g1_com, g2_com)
-                mem_det.export_stat(des, res, name_com)
+        # compartment_names = ["Rab5", "Rab7", "CatD", "Rab11", "Nucleus"]
+        # for name_com in compartment_names:
+        #     g1_com, g2_com = mem_det.groups_colocalization(name_com)
+        #     if (len(g1_com) == 0) | (len(g2_com) == 0):
+        #         print("data of '{name_com}' is missing")
+        #     else:
+        #         des, res = mem_det.stat_groups(g1_com, g2_com)
+        #         mem_det.export_stat(des, res, name_com)
 
 
 if __name__ == "__main__":
     mem_det = MembraneDetect('images')
+    mem_det.import_images()
     mem_det.all_images_analysis()
-    # mem_det.export_graphs()
+    mem_det.export_graphs()
     mem_det.statistics_analysis_and_export()
