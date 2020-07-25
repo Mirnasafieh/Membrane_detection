@@ -26,6 +26,7 @@ class MembraneDetect:
         self.compartment_names = ["Rab5", "Rab7", "CatD", "Rab11", "Nucleus"]
         self.data = pd.DataFrame()
         self.old_data = pd.DataFrame()
+        self.results = pd.DataFrame()
         if pathlib.Path(foldername).is_dir():
             self.foldername = pathlib.Path(foldername)
             if len(list(self.foldername.glob('**/*.tif'))) == 0:
@@ -91,20 +92,12 @@ class MembraneDetect:
 
     def image_measurements(self, img, genotype, cell_number):
         """Returns measurements of an image"""
-        # results_dict = {}
-        # cell_genotype = genotype
-        # N = N
-        # cell_number = cell_number
         total_area = img.size
         stained_area = np.count_nonzero(img)
         percent_area = stained_area / total_area
         total_intensity = np.sum(img)
         mean_intensity = np.mean(img)
-        intigrated_optical_density = mean_intensity * stained_area  # check math
-
-        # results_dict.update({"Cell genotype": cell_genotype, "N": N, "Cell number": cell_number, "total area": total_area, "stained area":stained_area, "percent area": percent_area, "total_intensity":total_intensity, "mean_intensity":mean_intensity, "intigrated_optical_density": intigrated_optical_density })
-        # df = pd.DataFrame.from_dict(results_dict, orient='index')
-        
+        intigrated_optical_density = mean_intensity * stained_area
         return total_area, stained_area, percent_area, total_intensity, mean_intensity, intigrated_optical_density
 
     def cell_genotype(self, image_name):
@@ -138,9 +131,9 @@ class MembraneDetect:
                 cell_num = cell_num_E4
             total_area, stained_area, percent_area, total_intensity, mean_intensity, intigrated_optical_density = mem_det.image_measurements(new_im, cell_genotype, i)
             results.update({
-                                "Cell genotype": cell_genotype,
+                                "cell genotype": cell_genotype,
                                 "N": self.N,
-                                "Cell number": cell_num,
+                                "cell number": cell_num,
                                 "total area": total_area,
                                 "stained area": stained_area,
                                 "percent area": percent_area,
@@ -148,27 +141,36 @@ class MembraneDetect:
                                 "mean_intensity": mean_intensity,
                                 "intigrated_optical_density": intigrated_optical_density
                             })
-            self.data = self.data.append((pd.DataFrame.from_dict(results, orient='index')).T)
+            self.results = self.results.append((pd.DataFrame.from_dict(results, orient='index')).T)
 
     def data_merge(self):
-        """This function merges between two dataframes - the existing one and the output dataframe according to cell genotype, N, and cell number"""
-        self.data = pd.merge(self.data, self.old_data, how='left', left_on=['Cell genotype', 'N', 'Cell number'], right_on=['Cell genotype', 'N', 'Cell number'])
+        """This function merges between two dataframes- the existing one and the output dataframe"""
+        """according to cell genotype, N, and cell number"""
+        result = pd.DataFrame()
+        if any(self.data.N == self.N):
+            result = pd.merge(self.data, self.old_data, how='left', left_on=['cell genotype', 'N', 'cell number'], 
+                                right_on=['cell genotype', 'N', 'cell number'])
+        else:
+            result = pd.concat([self.data, self.old_data], ignore_index=True, sort=False)
+        self.data = result   
+        
+        # self.data = pd.merge(self.data, self.old_data, how='left', left_on=['Cell genotype', 'N', 'Cell number'], right_on=['Cell genotype', 'N', 'Cell number'])
 
     def barplot_E3E4(self):
         """ This function creates a bar graph according to the parameters given"""
-        graph = sns.barplot(x="Cell genotype", y="intigrated_optical_density", palette="Greens", data=self.data).set_title("Receptor IOD")
+        graph = sns.barplot(x="cell genotype", y="intigrated_optical_density", palette="Greens", data=self.data).set_title("Receptor IOD")
         return graph
 
     def all_compartments_lines(self):
         """This function creates a line graph of both genottypes in all the compartments for given receptor"""
-        graph = sns.catplot(x="compartment", y="M1", hue="Cell genotype", palette="Greens", markers=["^", "o"],
+        graph = sns.catplot(x="compartment", y="M1", hue="cell genotype", palette="Greens", markers=["^", "o"],
                             linestyles=["--", "--"], kind="point", data=self.data)
         return graph
 
     def all_compartments_bars(self):
         """This function creates a barplot map of both genotypes in all the compartments for given receptor"""
         g = sns.FacetGrid(self.data, col="compartment", height=4, aspect=.5)
-        result = g.map(sns.barplot, "Cell genotype", "M1", palette='Greens')
+        result = g.map(sns.barplot, "cell genotype", "M1", palette='Greens')
         return result
 
     def save_graph(self, graph, file_name):
@@ -189,16 +191,16 @@ class MembraneDetect:
 
     def groups_IOD(self):
         """Returns two groups of IOD parameter for receptor variable sorted by genotype"""
-        group1 = self.data['intigrated_optical_density'].where(self.data['Cell genotype'] == 'E3').dropna()
-        group2 = self.data['intigrated_optical_density'].where(self.data['Cell genotype'] == 'E4').dropna()
+        group1 = self.data['intigrated_optical_density'].where(self.data['cell genotype'] == 'E3').dropna()
+        group2 = self.data['intigrated_optical_density'].where(self.data['cell genotype'] == 'E4').dropna()
         if (len(group1) == 0) | (len(group2) == 0):
             raise ValueError(f"ValueError exception thrown: data is missing")
         return group1, group2
 
     def groups_colocalization(self, name_com):
         """Returns two groups of M1 parametr for compartment parametr sorted by genotype"""
-        group1 = self.data['M1'].where((self.data['Cell genotype'] == 'E3') & (self.data['compartment'] == name_com)).dropna()
-        group2 = self.data['M1'].where((self.data['Cell genotype'] == 'E4') & (self.data['compartment'] == name_com)).dropna()
+        group1 = self.data['M1'].where((self.data['cell genotype'] == 'E3') & (self.data['compartment'] == name_com)).dropna()
+        group2 = self.data['M1'].where((self.data['cell genotype'] == 'E4') & (self.data['compartment'] == name_com)).dropna()
         return group1, group2
 
     def stat_groups(self, group1, group2):
@@ -253,6 +255,6 @@ class MembraneDetect:
 
 
 if __name__ == "__main__":
-    # mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx", 2)
-    mem_det = MembraneDetect('images')
+    mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx")
+    # mem_det = MembraneDetect('images')
     mem_det.all_pipeline()

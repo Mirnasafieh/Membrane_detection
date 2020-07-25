@@ -254,3 +254,4 @@ if __name__ == "__main__":
     mem_det = MembraneDetect('images', "hila ApoER2 colocalization.xlsx")
     # mem_det = MembraneDetect('images')
     mem_det.all_pipeline()
+    print('hila')
