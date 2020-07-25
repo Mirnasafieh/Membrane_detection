@@ -182,8 +182,8 @@ class MembraneDetect:
 
     def export_graphs_compartment(self):
         """export graphs of receptor to PDF"""
-        # all_comp_lines = mem_det.all_compartments_lines()
-        # mem_det.save_graph(all_comp_lines, "compartments lines")
+        all_comp_lines = mem_det.all_compartments_lines()
+        mem_det.save_graph(all_comp_lines, "compartments lines")
         all_comp_bars = mem_det.all_compartments_bars()
         mem_det.save_graph(all_comp_bars, "compartments bars")
 
@@ -253,6 +253,6 @@ class MembraneDetect:
 
 
 if __name__ == "__main__":
-    mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx", 2)
-    # mem_det = MembraneDetect('images')
+    # mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx", 2)
+    mem_det = MembraneDetect('images')
     mem_det.all_pipeline()
