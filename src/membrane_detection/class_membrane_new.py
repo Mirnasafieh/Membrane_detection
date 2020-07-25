@@ -1,6 +1,5 @@
 import pathlib
 import pandas as pd
-# from tifffile import imsave
 import numpy as np
 import matplotlib.pyplot as plt
 import skimage
@@ -9,13 +8,12 @@ import researchpy
 import seaborn as sns
 import dask.dataframe as dd
 from scipy.ndimage import gaussian_filter
-# from skimage.filters import meijering, sato, frangi, hessian, threshold_otsu, rank, unsharp_mask
 from skimage.filters import unsharp_mask
 from skimage import exposure, morphology, feature
-# from skimage.morphology import erosion, dilation, opening, closing, white_tophat, flood_fill, black_tophat, skeletonize, convex_hull_image, disk, closing, square
 from skimage.morphology import dilation, closing, disk
 from openpyxl import load_workbook
 from skimage.color import rgb2gray
+from skimage.io import imsave
 
 
 class MembraneDetect:
@@ -26,7 +24,8 @@ class MembraneDetect:
         self.compartment_names = ["Rab5", "Rab7", "CatD", "Rab11", "Nucleus"]
         self.data = pd.DataFrame()
         self.old_data = pd.DataFrame()
-        self.results = pd.DataFrame()
+        self.dask_data = pd.DataFrame()
+        self.membrane = pathlib.PurePath()
         if pathlib.Path(foldername).is_dir():
             self.foldername = pathlib.Path(foldername)
             if len(list(self.foldername.glob('**/*.tif'))) == 0:
@@ -82,6 +81,9 @@ class MembraneDetect:
         im_dialated = dilation(im_closed, selem_d)
         # Remove small objects:
         im_final = morphology.remove_small_objects(im_dialated, 1700, in_place=True, connectivity=200)
+        plt.imshow(im_final, cmap = 'gray')
+        plt.title('FINAL'), plt.xticks([]), plt.yticks([])
+        plt.show()
         return im_final
 
     def compare_images(self, img1, img2):
@@ -94,10 +96,10 @@ class MembraneDetect:
         """Returns measurements of an image"""
         total_area = img.size
         stained_area = np.count_nonzero(img)
-        percent_area = stained_area / total_area
+        percent_area = (stained_area / total_area)
         total_intensity = np.sum(img)
         mean_intensity = np.mean(img)
-        intigrated_optical_density = mean_intensity * stained_area
+        intigrated_optical_density = (mean_intensity * stained_area)
         return total_area, stained_area, percent_area, total_intensity, mean_intensity, intigrated_optical_density
 
     def cell_genotype(self, image_name):
@@ -116,12 +118,14 @@ class MembraneDetect:
         results = {}
         cell_num_E3 = 0
         cell_num_E4 = 0
+        mem_im = []
         for i in range(len(self.images_list)):
             image_bf = mem_det.grayscale(self.images_list[i][0])
-            mem_det.membrane_detect(image_bf)
+            mem_im = mem_det.membrane_detect(image_bf)
             image_fl = mem_det.grayscale(self.images_list[i][1])
-            new_im = mem_det.compare_images(image_bf, image_fl)
+            new_im = mem_det.compare_images(mem_im, image_fl)
             image_name = self.images_list[i][0].name
+            imsave(pathlib.Path(self.membrane, image_name).with_suffix('.tif'), mem_im)
             cell_genotype = mem_det.cell_genotype(image_name)
             if (cell_genotype == 'E3'):
                 cell_num_E3 += 1
@@ -141,35 +145,32 @@ class MembraneDetect:
                                 "mean_intensity": mean_intensity,
                                 "intigrated_optical_density": intigrated_optical_density
                             })
-            self.results = self.results.append((pd.DataFrame.from_dict(results, orient='index')).T)
+            self.data = self.data.append((pd.DataFrame.from_dict(results, orient='index')).T)
+            self.dask_data = dd.from_pandas(self.data, npartitions=2)
 
     def data_merge(self):
         """This function merges between two dataframes- the existing one and the output dataframe"""
         """according to cell genotype, N, and cell number"""
-        result = pd.DataFrame()
-        if any(self.data.N == self.N):
-            result = pd.merge(self.data, self.old_data, how='left', left_on=['cell genotype', 'N', 'cell number'], 
-                                right_on=['cell genotype', 'N', 'cell number'])
+        if any(self.dask_data.N == self.N):
+            self.dask_data = dd.merge(self.old_data, self.data, how='left', left_on=['cell genotype', 'N', 'cell number'],
+                                        right_on=['cell genotype', 'N', 'cell number'])
         else:
-            result = pd.concat([self.data, self.old_data], ignore_index=True, sort=False)
-        self.data = result   
-        
-        # self.data = pd.merge(self.data, self.old_data, how='left', left_on=['Cell genotype', 'N', 'Cell number'], right_on=['Cell genotype', 'N', 'Cell number'])
+            self.dask_data = dd.concat([self.old_data, self.data], ignore_index=True, sort=False)
 
     def barplot_E3E4(self):
         """ This function creates a bar graph according to the parameters given"""
-        graph = sns.barplot(x="cell genotype", y="intigrated_optical_density", palette="Greens", data=self.data).set_title("Receptor IOD")
+        graph = sns.barplot(x="cell genotype", y="intigrated_optical_density", palette="Greens", data=self.dask_data).set_title("Receptor IOD")
         return graph
 
     def all_compartments_lines(self):
         """This function creates a line graph of both genottypes in all the compartments for given receptor"""
         graph = sns.catplot(x="compartment", y="M1", hue="cell genotype", palette="Greens", markers=["^", "o"],
-                            linestyles=["--", "--"], kind="point", data=self.data)
+                            linestyles=["--", "--"], kind="point", data=self.dask_data)
         return graph
 
     def all_compartments_bars(self):
         """This function creates a barplot map of both genotypes in all the compartments for given receptor"""
-        g = sns.FacetGrid(self.data, col="compartment", height=4, aspect=.5)
+        g = sns.FacetGrid(self.dask_data, col="compartment", height=4, aspect=.5)
         result = g.map(sns.barplot, "cell genotype", "M1", palette='Greens')
         return result
 
@@ -191,16 +192,16 @@ class MembraneDetect:
 
     def groups_IOD(self):
         """Returns two groups of IOD parameter for receptor variable sorted by genotype"""
-        group1 = self.data['intigrated_optical_density'].where(self.data['cell genotype'] == 'E3').dropna()
-        group2 = self.data['intigrated_optical_density'].where(self.data['cell genotype'] == 'E4').dropna()
+        group1 = self.dask_data['intigrated_optical_density'].where(self.dask_data['cell genotype'] == 'E3').dropna()
+        group2 = self.dask_data['intigrated_optical_density'].where(self.dask_data['cell genotype'] == 'E4').dropna()
         if (len(group1) == 0) | (len(group2) == 0):
             raise ValueError(f"ValueError exception thrown: data is missing")
         return group1, group2
 
     def groups_colocalization(self, name_com):
         """Returns two groups of M1 parametr for compartment parametr sorted by genotype"""
-        group1 = self.data['M1'].where((self.data['cell genotype'] == 'E3') & (self.data['compartment'] == name_com)).dropna()
-        group2 = self.data['M1'].where((self.data['cell genotype'] == 'E4') & (self.data['compartment'] == name_com)).dropna()
+        group1 = self.dask_data['M1'].where((self.dask_data['cell genotype'] == 'E3') & (self.dask_data['compartment'] == name_com)).dropna()
+        group2 = self.dask_data['M1'].where((self.dask_data['cell genotype'] == 'E4') & (self.dask_data['compartment'] == name_com)).dropna()
         return group1, group2
 
     def stat_groups(self, group1, group2):
@@ -242,16 +243,21 @@ class MembraneDetect:
                 des, res = mem_det.stat_groups(g1_com, g2_com)
                 mem_det.export_stat(des, res, name_com)
 
+    def create_folder(self):
+        self.membrane = self.foldername / 'membrane_images'
+        pathlib.Path(self.membrane).mkdir()
+
     def all_pipeline(self):
         mem_det.import_images()
+        mem_det.create_folder()
         mem_det.all_images_analysis()
-        mem_det.export_graphs_receptor()
-        mem_det.statistics_analysis_receptor()
         if self.old_data.empty is False:
             mem_det.data_merge()
             mem_det.export_graphs_compartment()
             mem_det.statistics_analysis_compartment()
-        self.data.to_excel("df export.xlsx")
+        mem_det.export_graphs_receptor()
+        mem_det.statistics_analysis_receptor()
+        self.dask_data.to_excel("dd export.xlsx")
 
 
 if __name__ == "__main__":
