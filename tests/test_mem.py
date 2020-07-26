@@ -126,14 +126,15 @@ class TestPandasMunch:
 
         assert np.count_nonzero(membrane) <(1024*1024)
 
-    # def test_compate_imgs(self):
-    #     fname = pathlib.Path('images for testing')
-    #     mem_det = MembraneDetect(fname)
-    #     im1=
-    #     im2=
-    #     im_compare=mem_det.compare_images(im1, im2)
+    def test_compate_imgs(self):
+        fname = pathlib.Path('images for testing')
+        mem_det = MembraneDetect(fname)
+        im1="e3 hol 1250 1500_z0_membrane.tif"
+        im2="e3 hol 1250 1500_z0_ch02.tif"
 
-    #     assert im_compare
+        im_compare=mem_det.compare_images(im1, im2)
+
+        assert np.count_nonzero(im_compare) = np.count_nonzero(im2)-np.count_nonzero(im1)
 
 
 if __name__ == '__main__':

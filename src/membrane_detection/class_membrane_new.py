@@ -299,11 +299,7 @@ class MembraneDetect:
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
     mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx", 1)
-=======
-    mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx")
->>>>>>> fbe9229e7dede45186af4cba593c10a7a2707519
     # mem_det = MembraneDetect('images')
     mem_det.all_pipeline()
     
