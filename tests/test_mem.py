@@ -43,12 +43,18 @@ class TestPandasMunch:
         fname = 'images for testing'
         with pytest.raises(ValueError):
             MembraneDetect(fname, N=-1)
-    
+
+    def test_old_data_structure(self):
+        fname = pathlib.Path('images for testing')
+        old = 'test excel.xlsx'
+        with pytest.raises(TypeError):
+            MembraneDetect(fname, old_data=old)                            
+ 
 
 
 if __name__ == '__main__':
     ttests = TestPandasMunch()
-    methods = ["missing_folder", "wrong_input_type", "missing_images", "old_data_missing", "old_data_missing", "wrong_data_type", "N_positive"]
+    methods = ["missing_folder", "wrong_input_type", "missing_images", "old_data_missing", "old_data_missing", "wrong_data_type", "N_positive", "old_data_structure"]
     errors = []
 
     for method in methods:
