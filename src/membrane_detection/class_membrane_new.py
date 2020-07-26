@@ -184,16 +184,24 @@ class MembraneDetect:
         mem_det.save_graph(barplot_graph, "barplot")
 
     def export_graphs_compartment(self):
-        """export graphs of receptor to PDF"""
+        """export graphs of compoartment to PDF"""
         all_comp_lines = mem_det.all_compartments_lines()
         mem_det.save_graph(all_comp_lines, "compartments lines")
         all_comp_bars = mem_det.all_compartments_bars()
         mem_det.save_graph(all_comp_bars, "compartments bars")
 
-    def groups_IOD(self):
+    def groups_receptor_membrane(self):
         """Returns two groups of IOD parameter for receptor variable sorted by genotype"""
         group1 = self.dask_data['intigrated_optical_density'].where(self.dask_data['cell genotype'] == 'E3').dropna()
         group2 = self.dask_data['intigrated_optical_density'].where(self.dask_data['cell genotype'] == 'E4').dropna()
+        if (len(group1) == 0) | (len(group2) == 0):
+            raise ValueError(f"ValueError exception thrown: data is missing")
+        return group1, group2
+
+    def groups_receptor_total(self):
+        """Returns two groups of IOD parameter for receptor variable sorted by genotype"""
+        group1 = self.dask_data['IOD'].where(self.dask_data['cell genotype'] == 'E3').dropna()
+        group2 = self.dask_data['IOD'].where(self.dask_data['cell genotype'] == 'E4').dropna()
         if (len(group1) == 0) | (len(group2) == 0):
             raise ValueError(f"ValueError exception thrown: data is missing")
         return group1, group2
@@ -212,19 +220,19 @@ class MembraneDetect:
 
     def export_stat(self, descriptive_table, result_table, name_var):
         """Export data to excel file"""
-        sum_file = 'sum statistics.xlsx'
+        sum_file = self.membrane / 'sum statistics.xlsx'
         if pathlib.Path(sum_file).exists():
             book = load_workbook(pathlib.Path(sum_file))
             with pd.ExcelWriter(pathlib.Path(sum_file), engine='openpyxl') as writer:
                 writer.book = book
                 writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
-                descriptive_table.to_excel(writer, sheet_name=name_var + '_1')
-                result_table.to_excel(writer, sheet_name=name_var + '_2') 
+                descriptive_table.to_excel(writer, sheet_name=name_var + '_General Statistics')
+                result_table.to_excel(writer, sheet_name=name_var + '_T-test') 
                 writer.save()
         else:
             with pd.ExcelWriter(sum_file, engine='xlsxwriter') as writer:
-                descriptive_table.to_excel(writer, sheet_name=name_var + '_1')
-                result_table.to_excel(writer, sheet_name=name_var + '_2')
+                descriptive_table.to_excel(writer, sheet_name=name_var + '_General Statistics')
+                result_table.to_excel(writer, sheet_name=name_var + '_T-test')
                 writer.save()
 
     def statistics_analysis_receptor(self):
@@ -257,7 +265,6 @@ class MembraneDetect:
             mem_det.statistics_analysis_compartment()
         mem_det.export_graphs_receptor()
         mem_det.statistics_analysis_receptor()
-        self.dask_data.to_excel("dd export.xlsx")
 
 
 if __name__ == "__main__":
