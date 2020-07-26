@@ -19,4 +19,5 @@ def import_images(foldername):
 
 
 if __name__ == "__main__":
-    print(import_images('images'))
+    a=import_images('images for testing')
+    print (a[0])
