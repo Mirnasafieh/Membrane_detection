@@ -1,34 +1,62 @@
 import pandas as pd
 import pytest
 import traceback
-
-from statistics, roi_transfer, import_images, image_analysis, graphs_stats, data_handeling, canny_mirna, plot_edge_filter import *
-
+import pathlib
+from membrane_detection.class_membrane_new import *
 
 class TestPandasMunch:
 
-    fname = '311_service_requests.zip'
+    def test_missing_folder(self):
+        fname = pathlib.Path('teststs')
+        with pytest.raises(ValueError):
+            MembraneDetect(fname)
 
-    def test_common_complaint(self):
-        ans = common_complaint(self.fname)
-        assert ans == ('HEATING', 73371)
+    def test_wrong_input_type(self):
+        fname = 2
+        with pytest.raises(TypeError):
+            q = MembraneDetect(pathlib.Path(fname))
 
-    def test_parking_borough(self):
-        ans = parking_borough(self.fname)
-        assert ans == 'BROOKLYN'
+    def test_missing_images(self):
+        fname = pathlib.Path('empty folder')
+        with pytest.raises(ValueError):
+            MembraneDetect(fname)
 
-if __name__ == "__main__":
-    test_functions = ["test_parking_borough", "test_common_complaint"]
-    errors = []
+    def test_old_data_missing(self):
+        fname = pathlib.Path('empty folder')
+        old_data=pathlib.Path('teststs.xlsx')
+        with pytest.raises(ValueError):
+            MembraneDetect(fname, old_data=old_data)
+
+    def test_wrong_data_type(self):
+        fname = pathlib.Path('images')
+        old = 'word for test.docx'
+        with pytest.raises(TypeError):
+            MembraneDetect(fname, old_data=old)
+    
+    # def test_old_data_empty(self):
+    #     fname = pathlib.Path('images for testing')
+    #     old_data=pathlib.Path('empty excel.xlsx')
+    #     with pytest.raises(ValueError):
+    #         MembraneDetect(fname, old_data=old_data)
+    
+    def test_N_positive(self):
+        fname = 'images for testing'
+        with pytest.raises(ValueError):
+            MembraneDetect(fname, N=-1)
+    
+
+
+if __name__ == '__main__':
     ttests = TestPandasMunch()
+    methods = ["missing_folder", "wrong_input_type", "missing_images", "old_data_missing", "old_data_missing", "wrong_data_type", "N_positive"]
+    errors = []
 
-    for func in test_functions:
+    for method in methods:
         try:
-            getattr(ttests, func)()
-        except Exception as e:
-            track = traceback.format_exc()
-            print(track)
-            errors.append(f"Failed when testing method '{func}': {e}")
+            getattr(ttests, "test_" + method)()
+        except AssertionError as e:
+            errors.append(f"Failed when testing method 'test_{method}': {e}")
+
     if len(errors) > 0:
         print(errors)
     else:

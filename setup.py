@@ -39,7 +39,7 @@ INSTALL_REQUIRES = [
     'dask',
     'xlrd',
     'scikit-image',
-    'openCV',
+    'opencv-python',
     'openpyxl',
     'seaborn',
 ]
