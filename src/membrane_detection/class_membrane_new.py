@@ -2,7 +2,6 @@ import pathlib
 import skimage
 import skimage.io
 import researchpy
-import multiprocessing
 import seaborn as sns
 import pandas as pd
 import numpy as np
@@ -15,20 +14,8 @@ from skimage.morphology import dilation, closing, disk
 from openpyxl import load_workbook
 from skimage.color import rgb2gray
 from skimage.io import imsave
-from multiprocessing import Pool
-import time
-import cProfile
 
 
-# def timer(func):
-#     def inner_func(argument, extra_arguments):
-#         start_time = time.time()
-#         result = func(argument, extra_arguments)
-#         print(f"It tooks the code {time.time() - start_time} milliseconds to run.")
-#         return result
-#     return inner_func
-
-# @timer
 class MembraneDetect:
 
     def __init__(self, foldername, old_data=None, N=1):
@@ -54,8 +41,8 @@ class MembraneDetect:
                 if self.old_data.empty:
                     print(f"'{old_data}' is empty")
                 else:
-                    if (('cell genotype' in self.old_data.columns) & ('N' in self.old_data.columns)
-                        & ('cell number' in self.old_data.columns)) is False:
+                    if (('cell genotype' in self.old_data.columns) & ('cell number' in self.old_data.columns) &
+                    ('N' in self.old_data.columns)) is False:
                         raise ValueError(f"ValueError exception thrown:'{old_data}' has invalid data")
 
     def import_images(self):
@@ -130,8 +117,6 @@ class MembraneDetect:
             genotype = "Unknown"
         return genotype
 
-    # @classmethod
-    # @timer
     def all_images_analysis(self):
         """go through all images and adds measurements to df"""
         results = {}
@@ -140,11 +125,9 @@ class MembraneDetect:
         mem_im = []
         for i in range(len(self.images_list)):
             image_bf = self.grayscale(self.images_list[i][0])
-            # mem_im = img_as_ubyte(self.membrane_detect(image_bf))
             mem_im = skimage.util.apply_parallel(self.membrane_detect, image_bf)
             mem_im = img_as_ubyte(mem_im)
             image_fl = self.grayscale(self.images_list[i][1])
-            # new_im = skimage.util.apply_parallel(self.compare_images, mem_im, extra_arguments=image_fl)
             new_im = self.compare_images(mem_im, image_fl)
             image_name = self.images_list[i][0].name
             imsave(pathlib.Path(self.membrane, image_name).with_suffix('.tif'), mem_im, check_contrast=False)
@@ -300,7 +283,6 @@ class MembraneDetect:
 
     def all_pipeline(self):
         self.import_images()
-        # self.time_fun()
         self.create_folder()
         self.all_images_analysis()
         if self.old_data.empty is False:
@@ -314,12 +296,12 @@ class MembraneDetect:
 
 
 if __name__ == "__main__":
-    mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx")
+    mem_det = MembraneDetect('images', "test merrge1.xlsx")
     # mem_det = MembraneDetect('images')
     mem_det.all_pipeline()
-    mem_det = MembraneDetect('images for testing')
-    mem_det.import_images()
-    mem_det.all_images_analysis()
-    print (list(mem_det.data.columns))
+    # mem_det = MembraneDetect('images for testing')
+    # mem_det.import_images()
+    # mem_det.all_images_analysis()
+    # print (list(mem_det.data.columns))
 
     
