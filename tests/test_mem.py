@@ -28,11 +28,10 @@ class TestPandasMunch:
         with pytest.raises(ValueError):
             MembraneDetect(fname, old_data=old_data)
     
-    #failed
     def test_wrong_data_type(self):
         fname = pathlib.Path('images for testing')
         old = 'word for test.docx'
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             MembraneDetect(fname, old_data=old)
     
     def test_N_positive(self):
@@ -40,11 +39,10 @@ class TestPandasMunch:
         with pytest.raises(ValueError):
             MembraneDetect(fname, N=-1)
 
-    #failed
     def test_old_data_structure(self):
         fname = pathlib.Path('images for testing')
         old = 'test excel.xlsx'
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             MembraneDetect(fname, old_data=old)                            
  
     def test_import_images_output_islist(self):
@@ -182,14 +180,30 @@ class TestPandasMunch:
         mem_det.all_images_analysis()
         assert mem_det.data.shape[0]==4 and mem_det.data.shape[1]==9 and list(mem_det.data.columns)==['cell genotype', 'N', 'cell number', 'total area', 'stained area', 'percent area', 'total_intensity', 'mean_intensity', 'intigrated_optical_density']
         
+    def test_data_merge_N(self):
+        fname = pathlib.Path('images for testing')
+        old_data="test merrge1.xlsx"
+        p = pathlib.Path(old_data)
+        df_old = pd.read_excel(p)
 
+        mem_det1 = MembraneDetect(fname,old_data=old_data,N=1)
+        mem_det1.import_images()
+        mem_det1.all_images_analysis()
+        mem_det1.data_merge()
+        
+        mem_det2 = MembraneDetect(fname,old_data=old_data,N=2)
+        mem_det2.import_images()
+        mem_det2.all_images_analysis()
+        mem_det2.data_merge()
+
+        assert mem_det1.data.shape[0]== df_old.shape[0] and mem_det2.data.shape[0] > df_old.shape[0]
 
 if __name__ == '__main__':
     ttests = TestPandasMunch()
     methods = ["missing_folder", "wrong_input_type", "missing_images", "old_data_missing", "old_data_missing", "wrong_data_type", "N_positive", "old_data_structure",
     "import_images_output_islist", "test_import_images_output_len", "import_images_output_list_tuples", "import_images_output_len_tuples", "import_images_output_pairs", 
     "grayscale_output_shape", "grayscale_output", "membrane_detect_shape", "membrane_detect_binary", "membrane_detect_output", "compare_imgs", "_compare_imgs_output_shape", 
-    "image_measurements", "image_measurements_area", "cell_genotype", "all_image_analysis_df_shape"]
+    "image_measurements", "image_measurements_area", "cell_genotype", "all_image_analysis_df_shape","data_merge_N"]
     errors = []
 
     for method in methods:
