@@ -3,6 +3,9 @@ import pytest
 import traceback
 import pathlib
 from cv2 import cv2
+import os.path
+from os import path
+import glob
 from membrane_detection.class_membrane_new import *
 
 class TestPandasMunch:
@@ -179,7 +182,8 @@ class TestPandasMunch:
         mem_det.import_images()
         mem_det.all_images_analysis()
         assert mem_det.data.shape[0]==4 and mem_det.data.shape[1]==9 and list(mem_det.data.columns)==['cell genotype', 'N', 'cell number', 'total area', 'stained area', 'percent area', 'total_intensity', 'mean_intensity', 'intigrated_optical_density']
-        
+
+    #failed     
     def test_data_merge_N(self):
         fname = pathlib.Path('images for testing')
         old_data="test merrge1.xlsx"
@@ -198,12 +202,20 @@ class TestPandasMunch:
 
         assert mem_det1.data.shape[0]== df_old.shape[0] and mem_det2.data.shape[0] > df_old.shape[0]
 
+    def test_pipeline_output(self):
+        
+        fname = pathlib.Path('images for testing')
+        old_data="ApoER2 colocalization.xlsx"
+        mem_det = MembraneDetect(fname, old_data)
+        mem_det.all_pipeline()
+        assert path.exists ("D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images") 
+
 if __name__ == '__main__':
     ttests = TestPandasMunch()
     methods = ["missing_folder", "wrong_input_type", "missing_images", "old_data_missing", "old_data_missing", "wrong_data_type", "N_positive", "old_data_structure",
-    "import_images_output_islist", "test_import_images_output_len", "import_images_output_list_tuples", "import_images_output_len_tuples", "import_images_output_pairs", 
+    "import_images_output_islist", "import_images_output_len", "import_images_output_list_tuples", "import_images_output_len_tuples", "import_images_output_pairs", 
     "grayscale_output_shape", "grayscale_output", "membrane_detect_shape", "membrane_detect_binary", "membrane_detect_output", "compare_imgs", "_compare_imgs_output_shape", 
-    "image_measurements", "image_measurements_area", "cell_genotype", "all_image_analysis_df_shape","data_merge_N"]
+    "image_measurements", "image_measurements_area", "cell_genotype", "all_image_analysis_df_shape","data_merge_N", "pipeline_output"]
     errors = []
 
     for method in methods:

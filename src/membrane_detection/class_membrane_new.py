@@ -314,12 +314,11 @@ class MembraneDetect:
 
 
 if __name__ == "__main__":
-    # mem_det = MembraneDetect('images', "test excel.xlsx")
-
-    # mem_det.all_pipeline()
-    mem_det2 = MembraneDetect('images for testing',old_data="test merrge1.xlsx", N=2)
-    mem_det2.import_images()
-    mem_det2.all_images_analysis()
-    mem_det2.data_merge()
-
     
+    fname = pathlib.Path('images for testing')
+    old_data="ApoER2 colocalization.xlsx"
+    mem_det = MembraneDetect(fname, old_data)
+    mem_det.all_pipeline()
+
+    print (path.exists ("D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images"))
+
