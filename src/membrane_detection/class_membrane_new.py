@@ -14,13 +14,6 @@ from skimage.morphology import dilation, closing, disk
 from openpyxl import load_workbook
 from skimage.color import rgb2gray
 from skimage.io import imsave
-<<<<<<< HEAD
-=======
-from multiprocessing import Pool
-import time
-import cProfile
-from os import path, listdir
->>>>>>> eb50aa630a5f43d90068643256bea17582b8a757
 
 
 class MembraneDetect:
@@ -316,5 +309,5 @@ if __name__ == "__main__":
     mem_det = MembraneDetect(fname, old_data)
     mem_det.all_pipeline()
 
-    print (path.exists ("D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images"))
+    print (pathlib.Path.exists ("D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images"))
 
