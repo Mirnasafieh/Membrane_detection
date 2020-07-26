@@ -27,7 +27,7 @@ class MembraneDetect:
         self.old_data = pd.DataFrame()
         self.membrane = pathlib.PurePath()
         self.N = N
-        if (self.N < 1) | (self.N.is_integer() is False):
+        if (self.N < 1) | (isinstance(self.N, int) is False):
             raise ValueError(f"ValueError exception thrown: experiment number:'{self.N}' is not valid")
         if pathlib.Path(foldername).is_dir():
             self.foldername = pathlib.Path(foldername)
@@ -297,7 +297,7 @@ class MembraneDetect:
 
 
 if __name__ == "__main__":
-    mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx")
+    mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx", 0)
     # mem_det = MembraneDetect('images')
     mem_det.all_pipeline()
     
