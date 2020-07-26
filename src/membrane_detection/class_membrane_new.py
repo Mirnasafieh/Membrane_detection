@@ -15,18 +15,20 @@ from openpyxl import load_workbook
 from skimage.color import rgb2gray
 from skimage.io import imsave
 import time
-import cProfile
+# import cProfile
 
 
 class MembraneDetect:
 
     def __init__(self, foldername, old_data=None, N=1):
         self.images_list = []
-        self.N = N
         self.compartment_names = ["Rab5", "Rab7", "CatD", "Rab11", "Nucleus"]
         self.data = pd.DataFrame()
         self.old_data = pd.DataFrame()
         self.membrane = pathlib.PurePath()
+        self.N = N
+        if (self.N < 1) | (self.N.is_integer() is False):
+            raise ValueError(f"ValueError exception thrown: experiment number:'{self.N}' is not valid")
         if pathlib.Path(foldername).is_dir():
             self.foldername = pathlib.Path(foldername)
             if len(list(self.foldername.glob('**/*.tif'))) == 0:
@@ -34,10 +36,14 @@ class MembraneDetect:
         else:
             raise ValueError(f"ValueError exception thrown:'{foldername}' does not exist")
         if (old_data is not None):
-            if (pathlib.Path(old_data).exists()):
-                self.old_data = pd.read_excel(old_data)
-            if self.old_data.empty:
+            if old_data.endswith('.xlsx', '.xls') is False:
+                raise ValueError(f"ValueError exception thrown:'{old_data}' is not an excel file")
+            elif self.old_data.empty:
                 print(f"'{old_data}' is empty")
+            elif (pathlib.Path(old_data).exists()):
+                self.old_data = pd.read_excel(old_data)
+                if list(self.old_data.columns) != ['cell genotype', 'N', 'cell number']:
+                    print(f"'{old_data}' has invalid data")
 
     def import_images(self):
         """Return list of pairs of image pathlibs (fluorecent anf BF)"""
