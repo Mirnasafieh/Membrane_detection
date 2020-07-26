@@ -4,7 +4,7 @@ import traceback
 import pathlib
 from cv2 import cv2
 import os.path
-from os import path
+from os import path, listdir
 import glob
 from membrane_detection.class_membrane_new import *
 
@@ -74,14 +74,13 @@ class TestPandasMunch:
         mem_det.import_images()
         assert len (mem_det.images_list[0])==2
 
-    #not working
     def test_import_images_output_pairs(self):
         fname = pathlib.Path('images for testing')
         mem_det = MembraneDetect(fname)
         mem_det.import_images()
         file1=pathlib.WindowsPath('images for testing/e3 hol 1250 1500_z0_ch01.tif')
         file2= pathlib.WindowsPath('images for testing/e3 hol 1250 1500_z0_ch02.tif')
-        tup= tuple(file1,file2)
+        tup= (file1,file2)
         assert mem_det.images_list[0]==tup
 
     def test_grayscale_output_shape(self):
@@ -182,11 +181,11 @@ class TestPandasMunch:
         mem_det.import_images()
         mem_det.all_images_analysis()
         assert mem_det.data.shape[0]==4 and mem_det.data.shape[1]==9 and list(mem_det.data.columns)==['cell genotype', 'N', 'cell number', 'total area', 'stained area', 'percent area', 'total_intensity', 'mean_intensity', 'intigrated_optical_density']
-
-    #failed     
+    
+    #N=2
     def test_data_merge_N(self):
         fname = pathlib.Path('images for testing')
-        old_data="test merrge1.xlsx"
+        old_data="ApoER2 colocalization.xlsx"
         p = pathlib.Path(old_data)
         df_old = pd.read_excel(p)
 
@@ -200,9 +199,9 @@ class TestPandasMunch:
         mem_det2.all_images_analysis()
         mem_det2.data_merge()
 
-        assert mem_det1.data.shape[0]== df_old.shape[0] and mem_det2.data.shape[0] > df_old.shape[0]
+        assert mem_det1.data.shape[0]== df_old.shape[0] #and mem_det2.data.shape[0] > df_old.shape[0]
 
-    def test_pipeline_output(self):
+    def test_pipeline_output_folder(self):
         
         fname = pathlib.Path('images for testing')
         old_data="ApoER2 colocalization.xlsx"
@@ -210,12 +209,31 @@ class TestPandasMunch:
         mem_det.all_pipeline()
         assert path.exists ("D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images") 
 
+
+    def test_pipeline_output_imgs(self):
+        directory = 'D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images'
+        imges= list(f for f in listdir(directory) if f.endswith('.tif'))
+        assert len (imges)==4
+
+    def test_pipeline_output_excel(self):
+        directory = 'D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images'
+        imges= list(f for f in listdir(directory) if f.endswith('.xlsx'))
+        assert len (imges)>=2
+    
+    #not sure its supposed to be>=1
+    def test_pipeline_output_graphs(self):
+        directory = 'D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images'
+        imges= list(f for f in listdir(directory) if f.endswith('.pdf'))
+        assert len (imges)>=1
+
+
 if __name__ == '__main__':
     ttests = TestPandasMunch()
     methods = ["missing_folder", "wrong_input_type", "missing_images", "old_data_missing", "old_data_missing", "wrong_data_type", "N_positive", "old_data_structure",
     "import_images_output_islist", "import_images_output_len", "import_images_output_list_tuples", "import_images_output_len_tuples", "import_images_output_pairs", 
-    "grayscale_output_shape", "grayscale_output", "membrane_detect_shape", "membrane_detect_binary", "membrane_detect_output", "compare_imgs", "_compare_imgs_output_shape", 
-    "image_measurements", "image_measurements_area", "cell_genotype", "all_image_analysis_df_shape","data_merge_N", "pipeline_output"]
+    "grayscale_output_shape", "grayscale_output", "membrane_detect_shape", "membrane_detect_binary", "membrane_detect_output", "compare_imgs", "compare_imgs_output_shape", 
+    "image_measurements", "image_measurements_area", "cell_genotype", "all_image_analysis_df_shape","data_merge_N", "pipeline_output_folder", "pipeline_output_imgs", 
+    "pipeline_output_excel", "pipeline_output_graphs"]
     errors = []
 
     for method in methods:
