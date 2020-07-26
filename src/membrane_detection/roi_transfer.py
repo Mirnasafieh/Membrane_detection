@@ -4,6 +4,8 @@ import skimage.io
 from skimage.color import rgb2gray
 from skimage import feature
 from skimage.filters import unsharp_mask
+import matplotlib.pyplot as plt
+from skimage.util import img_as_ubyte
 
 
 def grayschale(img):
@@ -27,8 +29,8 @@ def edge_detec(img, sigma_val):
 
 def compare_images(img1, img2):
     """Returns new image with values of the fluorecent image where co-localization with membrane"""
-    compare_im = np.copy(img2)
-    compare_im = np.where(img1 == False, 0, compare_im)
+    compare_im = np.where(img1 == False, 0, img2)
+    compare_im = img_as_ubyte(compare_im)
     return (compare_im)
 
 
@@ -46,24 +48,24 @@ if __name__ == "__main__":
     # print('new', new[1022,98])
     # print('new_im', new_im[1022,98])
 
-    # fig, axes = plt.subplots(nrows=2, ncols=2, sharex=True, sharey=True, figsize=(8, 8))
-    # axes = axes.ravel()
+    fig, axes = plt.subplots(nrows=2, ncols=2, sharex=True, sharey=True, figsize=(8, 8))
+    axes = axes.ravel()
 
-    # axes[0].imshow(original, cmap=plt.cm.gray)
-    # axes[0].set_title('Original image')
+    axes[0].imshow(original, cmap=plt.cm.gray)
+    axes[0].set_title('Original image')
 
-    # axes[1].imshow(bf_im, cmap=plt.cm.gray)
-    # axes[1].set_title('BF image')
+    axes[1].imshow(bf_im, cmap=plt.cm.gray)
+    axes[1].set_title('BF image')
 
-    # axes[2].imshow(fl_im, cmap=plt.cm.gray)
-    # axes[2].set_title('fluorescent image')
+    axes[2].imshow(fl_im, cmap=plt.cm.gray)
+    axes[2].set_title('fluorescent image')
 
-    # axes[3].imshow(new_im, cmap=plt.cm.gray)
-    # axes[3].set_title('comparison image')
+    axes[3].imshow(new_im, cmap=plt.cm.gray)
+    axes[3].set_title('comparison image')
 
-    # for ax in axes:
-    #     ax.axis('off')
+    for ax in axes:
+        ax.axis('off')
 
-    # plt.tight_layout()
-    # plt.show()
+    plt.tight_layout()
+    plt.show()
     # image_measurements(new)
