@@ -28,7 +28,7 @@ class TestPandasMunch:
             MembraneDetect(fname, old_data=old_data)
 
     def test_wrong_data_type(self):
-        fname = pathlib.Path('images')
+        fname = pathlib.Path('images for testing')
         old = 'word for test.docx'
         with pytest.raises(TypeError):
             MembraneDetect(fname, old_data=old)
