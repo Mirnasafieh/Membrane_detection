@@ -1,5 +1,5 @@
 import pathlib
-
+from os import path, listdir
 
 
 def import_images(foldername):
@@ -19,5 +19,8 @@ def import_images(foldername):
 
 
 if __name__ == "__main__":
-    a=import_images('images for testing')
-    print (a[0])
+    # a=import_images('images for testing')
+    # print (a[0])
+    directory = 'D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images'
+    imges= list(f for f in listdir(directory) if f.endswith('.tif'))
+    print( len(imges))
