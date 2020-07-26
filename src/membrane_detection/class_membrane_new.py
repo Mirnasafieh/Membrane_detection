@@ -43,7 +43,7 @@ class MembraneDetect:
             #     print(f"'{old_data}' is empty")
             if (pathlib.Path(old_data).exists()):
                 self.old_data = pd.read_excel(old_data)
-                print(self.old_data.columns)
+                # print(self.old_data.columns)
                 # if list(self.old_data.columns) != ['cell genotype', 'N', 'cell number']:
                 #     print(f"'{old_data}' has invalid data")
 
@@ -284,18 +284,18 @@ class MembraneDetect:
     #     p.print_stats()
 
     def all_pipeline(self):
-            self.import_images()
-            # self.time_fun()
-            self.create_folder()
-            self.all_images_analysis()
-            if self.old_data.empty is False:
-                self.data_merge()
-                self.export_graphs_compartment()
-                self.statistics_analysis_compartment()
-                self.statistics_analysis_receptor_total()
-            self.export_graphs_receptor()
-            self.statistics_analysis_receptor_membrane()
-            self. export_df()
+        self.import_images()
+        # self.time_fun()
+        self.create_folder()
+        self.all_images_analysis()
+        if self.old_data.empty is False:
+            self.data_merge()
+            self.export_graphs_compartment()
+            self.statistics_analysis_compartment()
+            self.statistics_analysis_receptor_total()
+        self.export_graphs_receptor()
+        self.statistics_analysis_receptor_membrane()
+        self. export_df()
 
 
 if __name__ == "__main__":
