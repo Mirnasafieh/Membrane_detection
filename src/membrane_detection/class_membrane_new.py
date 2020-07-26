@@ -15,10 +15,20 @@ from skimage.morphology import dilation, closing, disk
 from openpyxl import load_workbook
 from skimage.color import rgb2gray
 from skimage.io import imsave
+from multiprocessing import Pool
 import time
-# import cProfile
+import cProfile
 
 
+# def timer(func):
+#     def inner_func(argument, extra_arguments):
+#         start_time = time.time()
+#         result = func(argument, extra_arguments)
+#         print(f"It tooks the code {time.time() - start_time} milliseconds to run.")
+#         return result
+#     return inner_func
+
+# @timer
 class MembraneDetect:
 
     def __init__(self, foldername, old_data=None, N=1):
@@ -37,15 +47,16 @@ class MembraneDetect:
         else:
             raise ValueError(f"ValueError exception thrown:'{foldername}' does not exist")
         if (old_data is not None):
-            # if old_data.endswith('.xlsx', '.xls') is False:
-            #     raise ValueError(f"ValueError exception thrown:'{old_data}' is not an excel file")
-            # elif self.old_data.empty:
-            #     print(f"'{old_data}' is empty")
-            if (pathlib.Path(old_data).exists()):
+            if pathlib.Path(old_data).suffix != '.xlsx':
+                raise ValueError(f"ValueError exception thrown:'{old_data}' is not an excel file")
+            elif (pathlib.Path(old_data).exists()):
                 self.old_data = pd.read_excel(old_data)
-                # print(self.old_data.columns)
-                # if list(self.old_data.columns) != ['cell genotype', 'N', 'cell number']:
-                #     print(f"'{old_data}' has invalid data")
+                if self.old_data.empty:
+                    print(f"'{old_data}' is empty")
+                else:
+                    if (('cell genotype' in self.old_data.columns) & ('N' in self.old_data.columns)
+                        & ('cell number' in self.old_data.columns)) is False:
+                        raise ValueError(f"ValueError exception thrown:'{old_data}' has invalid data")
 
     def import_images(self):
         """Return list of pairs of image pathlibs (fluorecent anf BF)"""
@@ -119,6 +130,8 @@ class MembraneDetect:
             genotype = "Unknown"
         return genotype
 
+    # @classmethod
+    # @timer
     def all_images_analysis(self):
         """go through all images and adds measurements to df"""
         results = {}
@@ -127,8 +140,11 @@ class MembraneDetect:
         mem_im = []
         for i in range(len(self.images_list)):
             image_bf = self.grayscale(self.images_list[i][0])
-            mem_im = img_as_ubyte(self.membrane_detect(image_bf))
+            # mem_im = img_as_ubyte(self.membrane_detect(image_bf))
+            mem_im = skimage.util.apply_parallel(self.membrane_detect, image_bf)
+            mem_im = img_as_ubyte(mem_im)
             image_fl = self.grayscale(self.images_list[i][1])
+            # new_im = skimage.util.apply_parallel(self.compare_images, mem_im, extra_arguments=image_fl)
             new_im = self.compare_images(mem_im, image_fl)
             image_name = self.images_list[i][0].name
             imsave(pathlib.Path(self.membrane, image_name).with_suffix('.tif'), mem_im, check_contrast=False)
@@ -162,7 +178,6 @@ class MembraneDetect:
         else:
             self.data = pd.concat([self.old_data, self.data], ignore_index=True, sort=False)
     
-    # @timer
     def barplot_E3E4_membrane(self):
         """ This function creates a bar graph according to the parameters given"""
         graph = sns.barplot(x="cell genotype", y="intigrated_optical_density", palette="Greens", data=self.data).set_title("Receptor membrane IOD")
@@ -278,10 +293,10 @@ class MembraneDetect:
         file_path = pathlib.Path(self.membrane) / 'sum results.xlsx'
         self.data.to_excel(file_path)
 
-    # def time_fun(self):
-    #     p = cProfile.Profile()
-    #     p.runcall(self.statistics_analysis_receptor_membrane)
-    #     p.print_stats()
+    def time_fun(self):
+        p = cProfile.Profile()
+        p.runcall(self.all_images_analysis)
+        p.print_stats()
 
     def all_pipeline(self):
         self.import_images()
@@ -302,4 +317,3 @@ if __name__ == "__main__":
     mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx")
     # mem_det = MembraneDetect('images')
     mem_det.all_pipeline()
-    
