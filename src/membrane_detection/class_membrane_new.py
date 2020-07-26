@@ -17,6 +17,7 @@ from skimage.io import imsave
 import time
 import cProfile
 
+
 class MembraneDetect:
 
     def __init__(self, foldername, old_data=None, N=1):
