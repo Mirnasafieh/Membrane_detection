@@ -175,13 +175,21 @@ class TestPandasMunch:
         geno= mem_det.cell_genotype(image_name)
         assert geno=="E3"
 
+    def test_all_image_analysis_df_shape(self):
+        fname = pathlib.Path('images for testing')
+        mem_det = MembraneDetect(fname)
+        mem_det.import_images()
+        mem_det.all_images_analysis()
+        assert mem_det.data.shape[0]==4 and mem_det.data.shape[1]==9 and list(mem_det.data.columns)==['cell genotype', 'N', 'cell number', 'total area', 'stained area', 'percent area', 'total_intensity', 'mean_intensity', 'intigrated_optical_density']
+        
+
 
 if __name__ == '__main__':
     ttests = TestPandasMunch()
     methods = ["missing_folder", "wrong_input_type", "missing_images", "old_data_missing", "old_data_missing", "wrong_data_type", "N_positive", "old_data_structure",
     "import_images_output_islist", "test_import_images_output_len", "import_images_output_list_tuples", "import_images_output_len_tuples", "import_images_output_pairs", 
     "grayscale_output_shape", "grayscale_output", "membrane_detect_shape", "membrane_detect_binary", "membrane_detect_output", "compare_imgs", "_compare_imgs_output_shape", 
-    "image_measurements", "image_measurements_area", "cell_genotype"]
+    "image_measurements", "image_measurements_area", "cell_genotype", "all_image_analysis_df_shape"]
     errors = []
 
     for method in methods:

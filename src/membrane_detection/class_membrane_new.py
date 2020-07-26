@@ -299,7 +299,9 @@ class MembraneDetect:
 
 
 if __name__ == "__main__":
-    mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx", 1)
-    # mem_det = MembraneDetect('images')
-    mem_det.all_pipeline()
+    mem_det = MembraneDetect('images for testing')
+    mem_det.import_images()
+    mem_det.all_images_analysis()
+    print (list(mem_det.data.columns))
+
     
