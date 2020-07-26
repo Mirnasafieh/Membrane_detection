@@ -120,20 +120,20 @@ class MembraneDetect:
         cell_num_E4 = 0
         mem_im = []
         for i in range(len(self.images_list)):
-            image_bf = mem_det.grayscale(self.images_list[i][0])
-            mem_im = mem_det.membrane_detect(image_bf)
-            image_fl = mem_det.grayscale(self.images_list[i][1])
-            new_im = mem_det.compare_images(mem_im, image_fl)
+            image_bf = self.grayscale(self.images_list[i][0])
+            mem_im = self.membrane_detect(image_bf)
+            image_fl = self.grayscale(self.images_list[i][1])
+            new_im = self.compare_images(mem_im, image_fl)
             image_name = self.images_list[i][0].name
             imsave(pathlib.Path(self.membrane, image_name).with_suffix('.tif'), mem_im)
-            cell_genotype = mem_det.cell_genotype(image_name)
+            cell_genotype = self.cell_genotype(image_name)
             if (cell_genotype == 'E3'):
                 cell_num_E3 += 1
                 cell_num = cell_num_E3
             if (cell_genotype == 'E4'):
                 cell_num_E4 += 1
                 cell_num = cell_num_E4
-            total_area, stained_area, percent_area, total_intensity, mean_intensity, intigrated_optical_density = mem_det.image_measurements(new_im, cell_genotype, i)
+            total_area, stained_area, percent_area, total_intensity, mean_intensity, intigrated_optical_density = self.image_measurements(new_im, cell_genotype, i)
             results.update({
                                 "cell genotype": cell_genotype,
                                 "N": self.N,
@@ -180,15 +180,15 @@ class MembraneDetect:
 
     def export_graphs_receptor(self):
         """export graphs of receptor to PDF"""
-        barplot_graph = mem_det.barplot_E3E4()
-        mem_det.save_graph(barplot_graph, "barplot")
+        barplot_graph = self.barplot_E3E4()
+        self.save_graph(barplot_graph, "barplot")
 
     def export_graphs_compartment(self):
         """export graphs of compoartment to PDF"""
-        all_comp_lines = mem_det.all_compartments_lines()
-        mem_det.save_graph(all_comp_lines, "compartments lines")
-        all_comp_bars = mem_det.all_compartments_bars()
-        mem_det.save_graph(all_comp_bars, "compartments bars")
+        all_comp_lines = self.all_compartments_lines()
+        self.save_graph(all_comp_lines, "compartments lines")
+        all_comp_bars = self.all_compartments_bars()
+        self.save_graph(all_comp_bars, "compartments bars")
 
     def groups_receptor_membrane(self):
         """Returns two groups of IOD parameter for receptor variable sorted by genotype"""
@@ -235,39 +235,46 @@ class MembraneDetect:
                 result_table.to_excel(writer, sheet_name=name_var + '_T-test')
                 writer.save()
 
-    def statistics_analysis_receptor(self):
-        """Returns statistics of receptor IOD of two groups"""
-        g1_receptor, g2_receptor = mem_det.groups_IOD()
-        des, res = mem_det.stat_groups(g1_receptor, g2_receptor)
-        mem_det.export_stat(des, res, "Receptor")
+    def statistics_analysis_receptor_membrane(self):
+        """Returns statistics of receptor membrane IOD of two groups"""
+        g1_membrane, g2_membrane = self.groups_receptor_membrane()
+        des, res = self.stat_groups(g1_membrane, g2_membrane)
+        self.export_stat(des, res, "Receptor_membrane_bound")
+
+    def statistics_analysis_receptor_total(self):
+        """Returns statistics of receptor total IOD of two groups"""
+        g1_total, g2_total = self.groups_receptor_total()
+        des, res = self.stat_groups(g1_total, g2_total)
+        self.export_stat(des, res, "Receptor_membrane_total")
 
     def statistics_analysis_compartment(self):
         """Returns statistics of compartment M1 of two groups"""
         for name_com in self.compartment_names:
-            g1_com, g2_com = mem_det.groups_colocalization(name_com)
+            g1_com, g2_com = self.groups_colocalization(name_com)
             if (len(g1_com) == 0) | (len(g2_com) == 0):
                 print(f"data of '{name_com}' is missing")
             else:
-                des, res = mem_det.stat_groups(g1_com, g2_com)
-                mem_det.export_stat(des, res, name_com)
+                des, res = self.stat_groups(g1_com, g2_com)
+                self.export_stat(des, res, name_com)
 
     def create_folder(self):
         self.membrane = self.foldername / 'membrane_images'
         pathlib.Path(self.membrane).mkdir()
 
     def all_pipeline(self):
-        mem_det.import_images()
-        mem_det.create_folder()
-        mem_det.all_images_analysis()
+        self.import_images()
+        self.create_folder()
+        self.all_images_analysis()
         if self.old_data.empty is False:
-            mem_det.data_merge()
-            mem_det.export_graphs_compartment()
-            mem_det.statistics_analysis_compartment()
-        mem_det.export_graphs_receptor()
-        mem_det.statistics_analysis_receptor()
+            self.data_merge()
+            self.export_graphs_compartment()
+            self.statistics_analysis_compartment()
+        self.export_graphs_receptor()
+        self.statistics_analysis_receptor_total()
+        self.statistics_analysis_receptor_membrane()
 
 
 if __name__ == "__main__":
-    mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx")
-    # mem_det = MembraneDetect('images')
+    # mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx")
+    mem_det = MembraneDetect('images')
     mem_det.all_pipeline()
