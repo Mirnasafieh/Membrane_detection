@@ -81,3 +81,4 @@ if __name__ == "__main__":
     membrane=membrane_detect(img)
     plot_comparison(img, membrane, 'membrane detection')
     plt.show()
+    print (np.count_nonzero(membrane))
