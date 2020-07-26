@@ -31,8 +31,9 @@ def save_graph(graph, file_name, parameter):
 
 if __name__ == "__main__":
     df=data_import("ApoER2 colocalization.xlsx")
-    sns.set(style="whitegrid")
+    # sns.set(style="whitegrid")
 
+    all_compartments_lines(df)
 
 
     plt.show()

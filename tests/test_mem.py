@@ -1,24 +1,23 @@
 import pandas as pd
 import pytest
 import traceback
+import pathlib
 
-from statistics, roi_transfer, import_images, image_analysis, graphs_stats, data_handeling, canny_mirna, plot_edge_filter import *
-
+from class_membrane_new import *
 
 class TestPandasMunch:
 
-    fname = '311_service_requests.zip'
 
-    def test_common_complaint(self):
-        ans = common_complaint(self.fname)
-        assert ans == ('HEATING', 73371)
+    def test_missing_file():
+        fname = pathlib.Path('teststs.fdfd')
+        with pytest.raises(ValueError):
+            MembraneDetect(fname)
 
-    def test_parking_borough(self):
-        ans = parking_borough(self.fname)
-        assert ans == 'BROOKLYN'
+
+
 
 if __name__ == "__main__":
-    test_functions = ["test_parking_borough", "test_common_complaint"]
+    test_functions = ["test_missing_file"]
     errors = []
     ttests = TestPandasMunch()
 
