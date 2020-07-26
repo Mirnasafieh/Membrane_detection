@@ -1,11 +1,12 @@
 import pathlib
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import skimage
 import skimage.io
 import researchpy
+import multiprocessing
 import seaborn as sns
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from skimage.util import img_as_ubyte
 from scipy.ndimage import gaussian_filter
 from skimage.filters import unsharp_mask
@@ -16,7 +17,6 @@ from skimage.color import rgb2gray
 from skimage.io import imsave
 import time
 # import cProfile
-# hila
 
 
 class MembraneDetect:
@@ -37,14 +37,15 @@ class MembraneDetect:
         else:
             raise ValueError(f"ValueError exception thrown:'{foldername}' does not exist")
         if (old_data is not None):
-            if old_data.endswith('.xlsx', '.xls') is False:
-                raise ValueError(f"ValueError exception thrown:'{old_data}' is not an excel file")
-            elif self.old_data.empty:
-                print(f"'{old_data}' is empty")
-            elif (pathlib.Path(old_data).exists()):
+            # if old_data.endswith('.xlsx', '.xls') is False:
+            #     raise ValueError(f"ValueError exception thrown:'{old_data}' is not an excel file")
+            # elif self.old_data.empty:
+            #     print(f"'{old_data}' is empty")
+            if (pathlib.Path(old_data).exists()):
                 self.old_data = pd.read_excel(old_data)
-                if list(self.old_data.columns) != ['cell genotype', 'N', 'cell number']:
-                    print(f"'{old_data}' has invalid data")
+                print(self.old_data.columns)
+                # if list(self.old_data.columns) != ['cell genotype', 'N', 'cell number']:
+                #     print(f"'{old_data}' has invalid data")
 
     def import_images(self):
         """Return list of pairs of image pathlibs (fluorecent anf BF)"""
@@ -283,22 +284,26 @@ class MembraneDetect:
     #     p.print_stats()
 
     def all_pipeline(self):
-        self.import_images()
-        # self.time_fun()
-        self.create_folder()
-        self.all_images_analysis()
-        if self.old_data.empty is False:
-            self.data_merge()
-            self.export_graphs_compartment()
-            self.statistics_analysis_compartment()
-            self.statistics_analysis_receptor_total()
-        self.export_graphs_receptor()
-        self.statistics_analysis_receptor_membrane()
-        self. export_df()
+            self.import_images()
+            # self.time_fun()
+            self.create_folder()
+            self.all_images_analysis()
+            if self.old_data.empty is False:
+                self.data_merge()
+                self.export_graphs_compartment()
+                self.statistics_analysis_compartment()
+                self.statistics_analysis_receptor_total()
+            self.export_graphs_receptor()
+            self.statistics_analysis_receptor_membrane()
+            self. export_df()
 
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx", 1)
+=======
+    mem_det = MembraneDetect('images', "ApoER2 colocalization.xlsx")
+>>>>>>> fbe9229e7dede45186af4cba593c10a7a2707519
     # mem_det = MembraneDetect('images')
     mem_det.all_pipeline()
     

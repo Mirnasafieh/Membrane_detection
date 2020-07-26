@@ -35,6 +35,7 @@ class TestPandasMunch:
         with pytest.raises(TypeError):
             MembraneDetect(fname, old_data=old)
     
+    #failed
     def test_N_positive(self):
         fname = 'images for testing'
         with pytest.raises(ValueError):
@@ -125,16 +126,6 @@ class TestPandasMunch:
         membrane=mem_det.membrane_detect(img_gray)
 
         assert np.count_nonzero(membrane) <(1024*1024)
-
-    # def test_compate_imgs(self):
-    #     fname = pathlib.Path('images for testing')
-    #     mem_det = MembraneDetect(fname)
-    #     im1=
-    #     im2=
-    #     im_compare=mem_det.compare_images(im1, im2)
-
-    #     assert im_compare
-
 
 if __name__ == '__main__':
     ttests = TestPandasMunch()
