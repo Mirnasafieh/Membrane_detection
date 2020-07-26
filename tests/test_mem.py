@@ -2,53 +2,61 @@ import pandas as pd
 import pytest
 import traceback
 import pathlib
-
 from membrane_detection.class_membrane_new import *
 
 class TestPandasMunch:
 
-
-    def test_missing_folder(fname):
+    def test_missing_folder(self):
         fname = pathlib.Path('teststs')
         with pytest.raises(ValueError):
             MembraneDetect(fname)
 
-    def test_missing_images(fname):
+    def test_wrong_input_type(self):
+        fname = 2
+        with pytest.raises(TypeError):
+            q = MembraneDetect(pathlib.Path(fname))
+
+    def test_missing_images(self):
         fname = pathlib.Path('empty folder')
         with pytest.raises(ValueError):
             MembraneDetect(fname)
 
-    def test_old_data_missing(fname):
+    def test_old_data_missing(self):
         fname = pathlib.Path('empty folder')
         old_data=pathlib.Path('teststs.xlsx')
         with pytest.raises(ValueError):
             MembraneDetect(fname, old_data=old_data)
+
+    def test_wrong_data_type(self):
+        fname = pathlib.Path('images')
+        old = 'word for test.docx'
+        with pytest.raises(TypeError):
+            MembraneDetect(fname, old_data=old)
     
-    # def test_old_data_empty(fname):
+    # def test_old_data_empty(self):
     #     fname = pathlib.Path('images for testing')
     #     old_data=pathlib.Path('empty excel.xlsx')
     #     with pytest.raises(ValueError):
     #         MembraneDetect(fname, old_data=old_data)
     
-    def test_N_positive(fname):
-        fname = pathlib.Path('images for testing')
+    def test_N_positive(self):
+        fname = 'images for testing'
         with pytest.raises(ValueError):
             MembraneDetect(fname, N=-1)
     
 
 
-if __name__ == "__main__":
-    test_functions = ["test_missing_folder", "test_missing_images", "test_old_data_missing","test_N_positive"]
-    errors = []
+if __name__ == '__main__':
     ttests = TestPandasMunch()
+    methods = ["missing_folder", "wrong_input_type", "missing_images", "old_data_missing", "old_data_missing", "wrong_data_type", "N_positive"]
+    errors = []
 
-    for func in test_functions:
+    for method in methods:
         try:
-            getattr(ttests, func)()
-        except Exception as e:
-            track = traceback.format_exc()
-            print(track)
-            errors.append(f"Failed when testing method '{func}': {e}")
+            getattr(ttests, "test_" + method)()
+        except AssertionError as e:
+            errors.append(f"Failed when testing method 'test_{method}': {e}")
+
     if len(errors) > 0:
         print(errors)
     else:
