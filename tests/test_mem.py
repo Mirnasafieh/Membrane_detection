@@ -35,7 +35,6 @@ class TestPandasMunch:
         with pytest.raises(TypeError):
             MembraneDetect(fname, old_data=old)
     
-    #failed
     def test_N_positive(self):
         fname = 'images for testing'
         with pytest.raises(ValueError):
@@ -127,11 +126,70 @@ class TestPandasMunch:
 
         assert np.count_nonzero(membrane) <(1024*1024)
 
+    #failed
+    def test_compare_imgs(self):
+        fname = pathlib.Path('images for testing')
+        mem_det = MembraneDetect(fname)
+        im1 = skimage.io.imread("D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_membrane.tif")
+        im_path="D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch02.tif"     
+        im2=mem_det.grayscale(im_path)
+
+        im_compare=mem_det.compare_images(im1, im2)
+        assert np.count_nonzero(im_compare)==np.count_nonzero(im1)
+
+    def test_compare_imgs_output_shape(self):
+        fname = pathlib.Path('images for testing')
+        mem_det = MembraneDetect(fname)
+        im1 = skimage.io.imread("D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_membrane.tif")
+        im_path="D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch02.tif"     
+        im2=mem_det.grayscale(im_path)
+
+        im_compare=mem_det.compare_images(im1, im2)
+        assert im_compare.shape == (1024, 1024)
+
+    def test_image_measurements(self):
+        fname = pathlib.Path('images for testing')
+        mem_det = MembraneDetect(fname)
+        im_path='D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch01.tif'    
+        img_gray=mem_det.grayscale(im_path)
+        genotype="E3"
+        cell_number=1
+        l=list(mem_det.image_measurements(img_gray, genotype=genotype, cell_number=cell_number))      
+        
+        assert len(l)== 6
+
+    def test_image_measurements_area(self):
+        fname = pathlib.Path('images for testing')
+        mem_det = MembraneDetect(fname)
+        im_path='D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch01.tif'    
+        img_gray=mem_det.grayscale(im_path)
+        genotype="E3"
+        cell_number=1
+        l=list(mem_det.image_measurements(img_gray, genotype=genotype, cell_number=cell_number)) 
+        assert l[0] <= img_gray.size  and   l[1] <= img_gray.size  and l[2]<=1
+
+    def test_cell_genotype(self):
+        fname = pathlib.Path('images for testing')
+        mem_det = MembraneDetect(fname)
+        image_name="e3 apoe testtest"
+        geno= mem_det.cell_genotype(image_name)
+        assert geno=="E3"
+
+    def test_all_image_analysis_df_shape(self):
+        fname = pathlib.Path('images for testing')
+        mem_det = MembraneDetect(fname)
+        mem_det.import_images()
+        mem_det.all_images_analysis()
+        assert mem_det.data.shape[0]==4 and mem_det.data.shape[1]==9 and list(mem_det.data.columns)==['cell genotype', 'N', 'cell number', 'total area', 'stained area', 'percent area', 'total_intensity', 'mean_intensity', 'intigrated_optical_density']
+        
+
+
 if __name__ == '__main__':
     ttests = TestPandasMunch()
     methods = ["missing_folder", "wrong_input_type", "missing_images", "old_data_missing", "old_data_missing", "wrong_data_type", "N_positive", "old_data_structure",
     "import_images_output_islist", "test_import_images_output_len", "import_images_output_list_tuples", "import_images_output_len_tuples", "import_images_output_pairs", 
-    "grayscale_output_shape", "grayscale_output", "membrane_detect_shape", "membrane_detect_binary", "membrane_detect_output"]
+    "grayscale_output_shape", "grayscale_output", "membrane_detect_shape", "membrane_detect_binary", "membrane_detect_output", "compare_imgs", "_compare_imgs_output_shape", 
+    "image_measurements", "image_measurements_area", "cell_genotype", "all_image_analysis_df_shape"]
     errors = []
 
     for method in methods:

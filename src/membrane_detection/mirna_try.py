@@ -3,39 +3,9 @@ import skimage.io
 from cv2 import cv2    
 from skimage.color import rgb2gray
 import numpy as np
-    
-def membrane_detect(img_grayscale):
-    """This fuction detects the membrane from a series of manipulations on a grayscale bright-field image"""
-    """input: grayscale image"""
-    """output: binary image"""
-    # sharpened image:
-    im_sharp = unsharp_mask(img_grayscale, radius=2, amount=2)
-    # Equalization threshold:
-    p2, p98 = np.percentile(im_sharp, (2, 98))
-    im_eq = exposure.rescale_intensity(img_grayscale, in_range=(p2, p98))
-    # Gaussian:
-    im_gaus = gaussian_filter(im_eq, sigma=2.7)
-    # Edge detection:
-    im_edge = feature.canny(im_gaus, sigma=1)
-    # Remove small objects:
-    im_clean1 = morphology.remove_small_objects(im_edge, 200, in_place=True, connectivity=50)
-    # Close:
-    phantom = im_clean1
-    phantom[10:30, 200:210] = 0
-    selem_c = disk(10)
-    im_closed = closing(phantom, selem_c)
-    # Dialated:
-    selem_d = disk(4)
-    im_dialated = dilation(im_closed, selem_d)
-    # Remove small objects:
-    im_final = morphology.remove_small_objects(im_dialated, 1700, in_place=True, connectivity=200)
-    return im_final
+import pathlib
 
 
-
-
-im_path='D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch01.tif'    
-img = cv2.imread(im_path)
 
 def grayscale(img_path):
     """converts the image into a grayscale"""
@@ -43,8 +13,25 @@ def grayscale(img_path):
     grayscale = rgb2gray(original)
     return grayscale
 
-img_gray=grayscale(im_path)
+def compare_images(img1, img2):
+    """Returns new image with values of the fluorecent image where co-localization with membrane"""
+    compare_im = np.copy(img2)
+    compare_im = np.where(img1 == False, 0, compare_im)
+    return (compare_im)
 
-membrane = membrane_detect(img_gray)
+def image_measurements(img, genotype, cell_number):
+    """Returns measurements of an image"""
+    total_area = img.size
+    stained_area = np.count_nonzero(img)
+    percent_area = (stained_area / total_area)
+    total_intensity = np.sum(img)
+    mean_intensity = np.mean(img)
+    intigrated_optical_density = (mean_intensity * stained_area)
+    return total_area, stained_area, percent_area, total_intensity, mean_intensity, intigrated_optical_density
 
-print (membrane.shape)
+fname = pathlib.Path('images for testing')
+im1 = skimage.io.imread("D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_membrane.tif")
+im_path="D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch02.tif"  
+im2=grayscale(im_path)
+
+print (image_measurements(im2, "E3", 1))
