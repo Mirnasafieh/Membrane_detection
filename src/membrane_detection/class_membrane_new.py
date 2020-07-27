@@ -26,7 +26,7 @@ class MembraneDetect:
         self.membrane = pathlib.PurePath()  # path of the resulting images
         self.N = N  # experiment number
         
-        # input validation:
+        # Input Validation:
         if (self.N < 1) | (isinstance(self.N, int) is False):
             raise ValueError(f"ValueError exception thrown: experiment number:'{self.N}' is not valid")
         if pathlib.Path(foldername).is_dir():
