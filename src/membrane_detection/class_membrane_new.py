@@ -292,8 +292,8 @@ class MembraneDetect:
 
 
 if __name__ == "__main__":
-    mem_det = MembraneDetect('images', "files for testing/test excel.xlsx")
-#     # mem_det = MembraneDetect('images')
+    # mem_det = MembraneDetect('images', "files for testing/test excel.xlsx")
+    mem_det = MembraneDetect('images')
     mem_det.all_pipeline()
 #     # mem_det = MembraneDetect('images for testing')
 #     # mem_det.import_images()
@@ -307,5 +307,5 @@ if __name__ == "__main__":
 
 #     print (pathlib.Path.exists ("D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images"))
 
-    mem_det = MembraneDetect('files for testing', "test merrge1.xlsx")
-    mem_det.all_pipeline()
+    # mem_det = MembraneDetect('files for testing', "test merrge1.xlsx")
+    # mem_det.all_pipeline()
