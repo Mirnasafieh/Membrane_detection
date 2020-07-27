@@ -11,6 +11,5 @@ from membrane_detection.class_membrane_new import *
 
 if __name__ == "__main__":
     mem_det = MembraneDetect('images', "old data ApoER2.xlsx")
-
     mem_det.all_pipeline()
 

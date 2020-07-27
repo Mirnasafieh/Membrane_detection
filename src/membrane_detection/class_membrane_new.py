@@ -294,8 +294,8 @@ class MembraneDetect:
 
 
 if __name__ == "__main__":
-    mem_det = MembraneDetect('images', "files for testing/test excel.xlsx")
-#     mem_det = MembraneDetect('images')
+    # mem_det = MembraneDetect('images', "files for testing/test excel.xlsx")
+    mem_det = MembraneDetect('images')
     mem_det.all_pipeline()
 # #     # mem_det = MembraneDetect('images for testing')
 # #     # mem_det.import_images()

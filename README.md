@@ -14,6 +14,13 @@ Installation:
 -------------
 -pip install dist/Membrane_detection-0.1.0-py3-none-any.whl
 
+Activation:
+-------------
+The class MembraneDetect is in the class_membrane_new.py file
+as describes in the __init__.py file:
+mem_det = MembraneDetect(arguments)
+mem_det.all_pipeline()
+
 
 Requirements:
 -------------
