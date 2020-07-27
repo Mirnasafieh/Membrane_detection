@@ -44,7 +44,7 @@ class TestPandasMunch:
 
     def test_old_data_structure(self):
         fname = pathlib.Path('files for testing')
-        old = 'test excel.xlsx'
+        old = 'files for testing/test excel.xlsx'
         with pytest.raises(ValueError):
             MembraneDetect(fname, old_data=old)                            
  
@@ -185,7 +185,7 @@ class TestPandasMunch:
     #failed
     def test_data_merge_N(self):
         fname = pathlib.Path('files for testing')
-        old_data="test merge1.xlsx"
+        old_data="files for testing/test merge1.xlsx"
         p = pathlib.Path(old_data)
         df_old = pd.read_excel(p)
 
