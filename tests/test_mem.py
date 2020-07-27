@@ -43,7 +43,7 @@ class TestPandasMunch:
             MembraneDetect(fname, N=-1)
 
     def test_old_data_structure(self):
-        fname = pathlib.Path('files for testing\images for testing')
+        fname = pathlib.Path('files for testing')
         old = 'test excel.xlsx'
         with pytest.raises(ValueError):
             MembraneDetect(fname, old_data=old)                            
