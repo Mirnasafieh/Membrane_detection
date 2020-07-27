@@ -10,9 +10,11 @@ This projects allows the user to detect the membrane of the cell utilizing a bri
 After the detection of the membrane, the flurecence of a protein and the area it coveres are measured in the compatible image (channel), allowing  quanification and analysis 
 of membrane-bound protein.
 
+
 Installation:
 -------------
 -pip install dist/Membrane_detection-0.1.0-py3-none-any.whl
+
 
 Requirements:
 -------------
@@ -87,8 +89,13 @@ Output:
 2. Output data excel file: this file will include the results of the image analysis (merged with the pre-existing data if given).
 3. Statistics excel file: this file will include general statistics (mean,N,max,min, etc) and t test between the two cell-genotypes in each of the other parameters.
 4. Graphs: a. E3 vs E4 of membrane bound protein IOD
-           b. E3 vs E4 of the total IOD of the protein (if exists)
-           c. a map of E3 vs E4 barplots of all the co-localizations
+           b. E3 vs E4 of the total IOD of the protein (if data exists)
+           c. a map of E3 vs E4 barplots of all the co-localizations with intracellular compartments (if data exists)
+           d. line graph of E3 and E4 all the co-localizations with intracellular compartments (if data exists)
+
+
 
 Tests:
---------
+-------
+Tests for each function of the class were build in the following dir: tests\test_mem.py
+These tests rely on files in the folder: files for testing
