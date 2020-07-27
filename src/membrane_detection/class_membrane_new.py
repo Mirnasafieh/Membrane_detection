@@ -295,19 +295,6 @@ class MembraneDetect:
         self. export_df()
 
 
-# if __name__ == "__main__":
-#     mem_det = MembraneDetect('images', "test merrge1.xlsx")
-#     # mem_det = MembraneDetect('images')
-#     mem_det.all_pipeline()
-#     # mem_det = MembraneDetect('images for testing')
-#     # mem_det.import_images()
-#     # mem_det.all_images_analysis()
-#     # print (list(mem_det.data.columns))
-    
-#     fname = pathlib.Path('images for testing')
-#     old_data="ApoER2 colocalization.xlsx"
-#     mem_det = MembraneDetect(fname, old_data)
-#     mem_det.all_pipeline()
-
-#     print (pathlib.Path.exists ("D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images"))
-
+if __name__ == "__main__":
+    mem_det = MembraneDetect('files for testing', "test merrge1.xlsx")
+    mem_det.all_pipeline()
