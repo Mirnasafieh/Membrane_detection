@@ -86,7 +86,7 @@ class TestPandasMunch:
     def test_grayscale_output_shape(self):
         fname = pathlib.Path('images for testing')
         mem_det = MembraneDetect(fname)
-        im_path='D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch01.tif'    
+        im_path='images for testing\e3 hol 1250 1500_z0_ch01.tif'    
         img_gray=mem_det.grayscale(im_path)
 
         assert img_gray.shape == (1024, 1024)
@@ -94,7 +94,7 @@ class TestPandasMunch:
     def test_grayscale_output(self):
         fname = pathlib.Path('images for testing')
         mem_det = MembraneDetect(fname)
-        im_path='D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch01.tif'    
+        im_path='images for testing\e3 hol 1250 1500_z0_ch01.tif'    
         img_gray=mem_det.grayscale(im_path)
 
         assert len(img_gray.shape)< 3
@@ -102,7 +102,7 @@ class TestPandasMunch:
     def test_membrane_detect_shape(self):
         fname = pathlib.Path('images for testing')
         mem_det = MembraneDetect(fname)
-        im_path='D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch01.tif'    
+        im_path='images for testing\e3 hol 1250 1500_z0_ch01.tif'    
         img_gray=mem_det.grayscale(im_path)
         membrane=mem_det.membrane_detect(img_gray)
 
@@ -111,7 +111,7 @@ class TestPandasMunch:
     def test_membrane_detect_binary(self):
         fname = pathlib.Path('images for testing')
         mem_det = MembraneDetect(fname)
-        im_path='D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch01.tif'    
+        im_path='images for testing\e3 hol 1250 1500_z0_ch01.tif'    
         img_gray=mem_det.grayscale(im_path)
         membrane=mem_det.membrane_detect(img_gray)
 
@@ -120,7 +120,7 @@ class TestPandasMunch:
     def test_membrane_detect_output(self):
         fname = pathlib.Path('images for testing')
         mem_det = MembraneDetect(fname)
-        im_path='D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch01.tif'    
+        im_path='images for testing\e3 hol 1250 1500_z0_ch01.tif'    
         img_gray=mem_det.grayscale(im_path)
         membrane=mem_det.membrane_detect(img_gray)
 
@@ -130,8 +130,8 @@ class TestPandasMunch:
     def test_compare_imgs(self):
         fname = pathlib.Path('images for testing')
         mem_det = MembraneDetect(fname)
-        im1 = skimage.io.imread("D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_membrane.tif")
-        im_path="D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch02.tif"     
+        im1 = skimage.io.imread("images for testing\e3 hol 1250 1500_z0_membrane.tif")
+        im_path="images for testing\e3 hol 1250 1500_z0_ch02.tif"     
         im2=mem_det.grayscale(im_path)
 
         im_compare=mem_det.compare_images(im1, im2)
@@ -140,8 +140,8 @@ class TestPandasMunch:
     def test_compare_imgs_output_shape(self):
         fname = pathlib.Path('images for testing')
         mem_det = MembraneDetect(fname)
-        im1 = skimage.io.imread("D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_membrane.tif")
-        im_path="D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch02.tif"     
+        im1 = skimage.io.imread("images for testing\e3 hol 1250 1500_z0_membrane.tif")
+        im_path="images for testing\e3 hol 1250 1500_z0_ch02.tif"     
         im2=mem_det.grayscale(im_path)
 
         im_compare=mem_det.compare_images(im1, im2)
@@ -150,7 +150,7 @@ class TestPandasMunch:
     def test_image_measurements(self):
         fname = pathlib.Path('images for testing')
         mem_det = MembraneDetect(fname)
-        im_path='D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch01.tif'    
+        im_path='images for testing\e3 hol 1250 1500_z0_ch01.tif'    
         img_gray=mem_det.grayscale(im_path)
         genotype="E3"
         cell_number=1
@@ -161,7 +161,7 @@ class TestPandasMunch:
     def test_image_measurements_area(self):
         fname = pathlib.Path('images for testing')
         mem_det = MembraneDetect(fname)
-        im_path='D:\DannyM19\Desktop\Membrane detection\images for testing\e3 hol 1250 1500_z0_ch01.tif'    
+        im_path='images for testing\e3 hol 1250 1500_z0_ch01.tif'    
         img_gray=mem_det.grayscale(im_path)
         genotype="E3"
         cell_number=1
@@ -207,21 +207,21 @@ class TestPandasMunch:
         old_data="ApoER2 colocalization.xlsx"
         mem_det = MembraneDetect(fname, old_data)
         mem_det.all_pipeline()
-        assert path.exists ("D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images") 
+        assert path.exists ("images for testing\membrane_images") 
 
 
     def test_pipeline_output_imgs(self):
-        directory = 'D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images'
+        directory = 'images for testing\membrane_images'
         imges= list(f for f in listdir(directory) if f.endswith('.tif'))
         assert len (imges)==4
 
     def test_pipeline_output_excel(self):
-        directory = 'D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images'
+        directory = 'images for testing\membrane_images'
         imges= list(f for f in listdir(directory) if f.endswith('.xlsx'))
         assert len (imges)>=2
     
     #not sure its supposed to be>=1
     def test_pipeline_output_graphs(self):
-        directory = 'D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images'
+        directory = 'images for testing\membrane_images'
         imges= list(f for f in listdir(directory) if f.endswith('.pdf'))
         assert len (imges)>=1
