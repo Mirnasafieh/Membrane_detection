@@ -36,14 +36,15 @@ class MembraneDetect:
         if (old_data is not None):
             if pathlib.Path(old_data).suffix != '.xlsx':
                 raise ValueError(f"ValueError exception thrown:'{old_data}' is not an excel file")
-            elif (pathlib.Path(old_data).exists()):
+            elif pathlib.Path(old_data).exists():
                 self.old_data = pd.read_excel(old_data)
                 if self.old_data.empty:
                     print(f"'{old_data}' is empty")
-                else:
-                    if (('cell genotype' in self.old_data.columns) & ('cell number' in self.old_data.columns) &
-                    ('N' in self.old_data.columns)) is False:
-                        raise ValueError(f"ValueError exception thrown:'{old_data}' has invalid data")
+                elif (('cell genotype' in self.old_data.columns) & ('cell number' in self.old_data.columns) &
+                ('N' in self.old_data.columns)) is False:
+                    raise ValueError(f"ValueError exception thrown:'{old_data}' has invalid data")
+            print((('cell genotype' in self.old_data.columns) & ('cell number' in self.old_data.columns) &
+                    ('N' in self.old_data.columns)))
 
     def import_images(self):
         """Return list of pairs of image pathlibs (fluorecent anf BF)"""
@@ -276,11 +277,6 @@ class MembraneDetect:
         file_path = pathlib.Path(self.membrane) / 'sum results.xlsx'
         self.data.to_excel(file_path)
 
-    def time_fun(self):
-        p = cProfile.Profile()
-        p.runcall(self.all_images_analysis)
-        p.print_stats()
-
     def all_pipeline(self):
         self.import_images()
         self.create_folder()
@@ -295,10 +291,10 @@ class MembraneDetect:
         self. export_df()
 
 
-# if __name__ == "__main__":
-#     mem_det = MembraneDetect('images', "test merrge1.xlsx")
+if __name__ == "__main__":
+    mem_det = MembraneDetect('images', "files for testing/test excel.xlsx")
 #     # mem_det = MembraneDetect('images')
-#     mem_det.all_pipeline()
+    mem_det.all_pipeline()
 #     # mem_det = MembraneDetect('images for testing')
 #     # mem_det.import_images()
 #     # mem_det.all_images_analysis()
