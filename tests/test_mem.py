@@ -126,7 +126,6 @@ class TestPandasMunch:
 
         assert np.count_nonzero(membrane) <(1024*1024)
 
-    #not ideal
     def test_compare_imgs(self):
         fname = pathlib.Path('files for testing\images for testing')
         mem_det = MembraneDetect(fname)
@@ -184,7 +183,7 @@ class TestPandasMunch:
     
     #failed
     def test_data_merge_N(self):
-        fname = pathlib.Path('files for testing')
+        fname = pathlib.Path('files for testing\images for testing')
         old_data="test merge1.xlsx"
         p = pathlib.Path(old_data)
         df_old = pd.read_excel(p)
@@ -204,7 +203,7 @@ class TestPandasMunch:
     def test_pipeline_output_folder(self):
         
         fname = pathlib.Path('files for testing\images for testing')
-        old_data="files for testing\test merge1.xlsx"
+        old_data="test merge1.xlsx"
         mem_det = MembraneDetect(fname, old_data)
         mem_det.all_pipeline()
         assert path.exists ("files for testing\images for testing\membrane_images") 
