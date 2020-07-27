@@ -42,7 +42,8 @@ INSTALL_REQUIRES = [
     'opencv-python',
     'openpyxl',
     'seaborn',
-    'researchpy'
+    'researchpy',
+    'XlsxWriter',
 ]
 
 ###################################################################
