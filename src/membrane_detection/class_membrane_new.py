@@ -23,8 +23,10 @@ class MembraneDetect:
         self.compartment_names = ["Rab5", "Rab7", "CatD", "Rab11", "Nucleus"]
         self.data = pd.DataFrame()
         self.old_data = pd.DataFrame()
-        self.membrane = pathlib.PurePath()
-        self.N = N
+        self.membrane = pathlib.PurePath() # path of the resulting images
+        self.N = N #exp number
+        
+        #input validation 
         if (self.N < 1) | (isinstance(self.N, int) is False):
             raise ValueError(f"ValueError exception thrown: experiment number:'{self.N}' is not valid")
         if pathlib.Path(foldername).is_dir():
@@ -163,11 +165,12 @@ class MembraneDetect:
             self.data = pd.concat([self.old_data, self.data], ignore_index=True, sort=False)
     
     def barplot_E3E4_membrane(self):
-        """ This function creates a bar graph according to the parameters given"""
+        """ This function creates a bar graph for the membrane bound protein"""
         graph = sns.barplot(x="cell genotype", y="intigrated_optical_density", palette="Greens", data=self.data).set_title("Receptor membrane IOD")
         return graph
 
     def barplot_E3E4_total(self):
+        """This function creates a bar graph total IOD of the receptor from the existind data E3 vs E4"""
         graph = sns.barplot(x="cell genotype", y="IOD", palette="Greens", data=self.data).set_title("Receptor total IOD")
         return graph
 
@@ -270,6 +273,7 @@ class MembraneDetect:
                 self.export_stat(des, res, name_com)
 
     def create_folder(self):
+        """creates a new folder to export the results in"""
         self.membrane = self.foldername / 'membrane_images'
         pathlib.Path(self.membrane).mkdir()
 
@@ -291,21 +295,21 @@ class MembraneDetect:
         self. export_df()
 
 
-if __name__ == "__main__":
-    # mem_det = MembraneDetect('images', "files for testing/test excel.xlsx")
-    mem_det = MembraneDetect('images')
-    mem_det.all_pipeline()
-#     # mem_det = MembraneDetect('images for testing')
-#     # mem_det.import_images()
-#     # mem_det.all_images_analysis()
-#     # print (list(mem_det.data.columns))
-    
-#     fname = pathlib.Path('images for testing')
-#     old_data="ApoER2 colocalization.xlsx"
-#     mem_det = MembraneDetect(fname, old_data)
+# if __name__ == "__main__":
+#     # mem_det = MembraneDetect('images', "files for testing/test excel.xlsx")
+#     mem_det = MembraneDetect('images')
 #     mem_det.all_pipeline()
+# #     # mem_det = MembraneDetect('images for testing')
+# #     # mem_det.import_images()
+# #     # mem_det.all_images_analysis()
+# #     # print (list(mem_det.data.columns))
+    
+# #     fname = pathlib.Path('images for testing')
+# #     old_data="ApoER2 colocalization.xlsx"
+# #     mem_det = MembraneDetect(fname, old_data)
+# #     mem_det.all_pipeline()
 
-#     print (pathlib.Path.exists ("D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images"))
+# #     print (pathlib.Path.exists ("D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images"))
 
-    # mem_det = MembraneDetect('files for testing', "test merrge1.xlsx")
-    # mem_det.all_pipeline()
+#     # mem_det = MembraneDetect('files for testing', "test merrge1.xlsx")
+#     # mem_det.all_pipeline()
