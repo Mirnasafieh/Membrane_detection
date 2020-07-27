@@ -307,3 +307,5 @@ if __name__ == "__main__":
 
 #     print (pathlib.Path.exists ("D:\DannyM19\Desktop\Membrane detection\images for testing\membrane_images"))
 
+    mem_det = MembraneDetect('files for testing', "test merrge1.xlsx")
+    mem_det.all_pipeline()
