@@ -11,6 +11,5 @@
         "./tests",
         "-p",
         "test_*.py"
-    ],
-    "python.pythonPath": "D:\\DannyM19\\Desktop\\pHd-Mirna\\proposal\\miniconda\\envs\\membrane\\python.exe"
+    ]
 }
