@@ -23,10 +23,10 @@ class MembraneDetect:
         self.compartment_names = ["Rab5", "Rab7", "CatD", "Rab11", "Nucleus"]
         self.data = pd.DataFrame()
         self.old_data = pd.DataFrame()
-        self.membrane = pathlib.PurePath() # path of the resulting images
-        self.N = N #exp number
+        self.membrane = pathlib.PurePath()  # path of the resulting images
+        self.N = N  # experiment number
         
-        #input validation 
+        # Input Validation:
         if (self.N < 1) | (isinstance(self.N, int) is False):
             raise ValueError(f"ValueError exception thrown: experiment number:'{self.N}' is not valid")
         if pathlib.Path(foldername).is_dir():
@@ -45,8 +45,6 @@ class MembraneDetect:
                 elif (('cell genotype' in self.old_data.columns) & ('cell number' in self.old_data.columns) &
                 ('N' in self.old_data.columns)) is False:
                     raise ValueError(f"ValueError exception thrown:'{old_data}' has invalid data")
-            print((('cell genotype' in self.old_data.columns) & ('cell number' in self.old_data.columns) &
-                    ('N' in self.old_data.columns)))
 
     def import_images(self):
         """Return list of pairs of image pathlibs (fluorecent anf BF)"""
@@ -295,10 +293,10 @@ class MembraneDetect:
         self. export_df()
 
 
-# if __name__ == "__main__":
-#     # mem_det = MembraneDetect('images', "files for testing/test excel.xlsx")
+if __name__ == "__main__":
+    mem_det = MembraneDetect('images', "files for testing/test excel.xlsx")
 #     mem_det = MembraneDetect('images')
-#     mem_det.all_pipeline()
+    mem_det.all_pipeline()
 # #     # mem_det = MembraneDetect('images for testing')
 # #     # mem_det.import_images()
 # #     # mem_det.all_images_analysis()
